@@ -11,8 +11,10 @@ ROOT = Path(__file__).resolve().parents[2]
 load_dotenv(ROOT / ".env")
 
 # FS_DATA_DIR points the whole pipeline at another raw-data folder (tests and CI use fixtures).
-RAW_DIR = Path(os.environ["FS_DATA_DIR"]).resolve() if os.environ.get("FS_DATA_DIR") else (
-    ROOT / "data" / "raw"
+RAW_DIR = (
+    Path(os.environ["FS_DATA_DIR"]).resolve()
+    if os.environ.get("FS_DATA_DIR")
+    else (ROOT / "data" / "raw")
 )
 DATA_DIR = ROOT / "data"
 CHARTS_DIR = ROOT / "charts"
@@ -44,3 +46,21 @@ def sec_user_agent() -> str:
             '"Your Name your@email", as the SEC asks of every automated client.'
         )
     return agent
+
+
+# --- SEC Form D quarterly data sets (spec 02) ---
+# The SEC moved the folder in 2026: quarters up to 2026 Q1 sit under structureddata/, later
+# ones under datastandardsinnovation/. Each quarter is tried at every base in turn.
+FORMD_URLS = (
+    "https://www.sec.gov/files/structureddata/data/form-d-data-sets/{year}q{quarter}_d.zip",
+    "https://www.sec.gov/files/datastandardsinnovation/data/form-d-data-sets/{year}q{quarter}_d.zip",
+)
+FORMD_FIRST_QUARTER = (2022, 4)
+FORMD_TABLES = ("FORMDSUBMISSION", "ISSUERS", "OFFERING", "RELATEDPERSONS")
+FORMD_DIR = RAW_DIR / "formd"
+
+ZCTA_COUNTY_URL = (
+    "https://www2.census.gov/geo/docs/maps-data/data/rel2020/zcta520/"
+    "tab20_zcta520_county20_natl.txt"
+)
+ZCTA_COUNTY_FILE = RAW_DIR / "zcta_county_rel.txt"
