@@ -64,3 +64,21 @@ ZCTA_COUNTY_URL = (
     "tab20_zcta520_county20_natl.txt"
 )
 ZCTA_COUNTY_FILE = RAW_DIR / "zcta_county_rel.txt"
+
+# --- DOL LCA disclosure data (spec 03) ---
+# Honest, descriptive agent for sites that are not the SEC (DOL rejects browser look-alikes).
+PUBLIC_USER_AGENT = "fundsponsor research (github.com/Puraav/funded-and-sponsoring)"
+
+LCA_PAGE = "https://www.dol.gov/agencies/eta/foreign-labor/performance"
+_LCA_BASE = "https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs"
+# (fiscal year, quarter, url). Since FY2020 each file holds ONE quarter of decisions, not the
+# year to date, so every quarter is needed. FY = October to September.
+LCA_FILES = [
+    (fy, q, f"{_LCA_BASE}/LCA_Disclosure_Data_FY{fy}_Q{q}.xlsx")
+    for fy in (2023, 2024, 2025)
+    for q in (1, 2, 3, 4)
+] + [
+    (2026, 3, "https://www.dol.gov/media/LCA_Disclosure_Data_FY2026_Q3.xlsx"),
+]
+LCA_DIR = RAW_DIR / "lca"
+LCA_PARQUET = LCA_DIR / "lca_all.parquet"

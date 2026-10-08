@@ -24,3 +24,13 @@ That covers Oct 2022 → latest, enough for "24 months before" and "12 months af
 - Commit `step 03: fetch LCA data`
 
 ## Notes from build
+- **The files are not cumulative.** For FY2023 to FY2025 each `Q{n}` file holds one quarter of decisions, so the Q4 file is not the full year (FY2023 Q4 has 128k rows; the year has 525k). All four quarters of each year are downloaded: 12 files. FY2026 has a single file, `FY2026_Q3`, which is cumulative for October 2025 to June 2026.
+- **FY2026 URL differs:** `https://www.dol.gov/media/LCA_Disclosure_Data_FY2026_Q3.xlsx`, not the `/sites/dolgov/files/ETA/oflc/pdfs/` pattern. `config.LCA_FILES` lists every URL explicitly.
+- **dol.gov rejects browser look-alike User-Agents** (403 from Akamai) but serves an honest descriptive one, so the downloader sends `fundsponsor research (github.com/Puraav/funded-and-sponsoring)`.
+- **Header matches the spec.** All 30 wanted columns exist under those exact names (the file has 96 columns). An alias map covers the older `_1`-suffixed names in case a file uses them.
+- **Text cells are wrapped as Excel formulas**, e.g. `="07310"`, `="15-1252.00"`, `=""`. The wrapper is stripped; `=""` becomes null.
+- **Cases repeat across quarterly files** (a case certified in one quarter and withdrawn in a later one appears in both): 2,239,692 rows read, 2,095,023 after keeping the latest file's row per `CASE_NUMBER`.
+- Three columns are added: `fiscal_year`, `fiscal_quarter`, `source_file`.
+- Real run on 2026-10-08: FY2023 524,894 rows, FY2024 546,490, FY2025 586,143, FY2026 (to June) 437,496. Decision dates 2022-10-01 to 2026-06-30; received dates 2019-10-03 to 2026-06-30. 97.5% are `H-1B`; the rest are `E-3 Australian`, `H-1B1 Chile`, `H-1B1 Singapore`. Statuses: `Certified`, `Certified - Withdrawn`, `Withdrawn`, `Denied`.
+- `PW_WAGE_LEVEL` is null on about 7% of rows and `N/A` on a few more (prevailing wage from a non-OES source). `EMPLOYER_POSTAL_CODE` is ZIP+4 on about 1% of rows.
+- The raw download is 1.6 GB of Excel; `lca_all.parquet` is 110 MB. Conversion takes about 80 seconds with 8 workers.
