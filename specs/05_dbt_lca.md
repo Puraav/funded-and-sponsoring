@@ -22,3 +22,30 @@ Title keywords win over SOC when they point to Data or Product.
 - `dbt build --select +int_lca_h1b` green
 - Print rows kept, share new-hire, rows and median wage per role group and per wage level
 - Commit `step 05: dbt LCA models`
+
+## Notes from build
+- `title_keywords.csv` has a fourth column, `only_soc`. It carries the two conditional rules in the spec ("15-1299 when the title has engineer/developer" → Software; "11-3021 with product in the title" → Product) so that all role logic lives in the seeds.
+- Keyword priority, lowest wins: product manager / product owner / program manager (1), "product" on 11-3021 (2), the Data keywords (3), engineer / developer on 15-1299 (4). So "Data Product Manager" is Product, and "Machine Learning Engineer" on a software SOC code is Data.
+- `soc_code` in the model is the first seven characters (`15-1252`); the raw value is `15-1252.00`.
+- Only `case_status = 'Certified'` counts. "Certified - Withdrawn" (about 6% of rows) is excluded.
+- `pw_wage_level` keeps I to IV only; `N/A` and blank become null (about 8% of certified H-1B rows).
+- A "Software Engineer" title filed under a non-software SOC code such as 15-1211 lands in "Other tech", as the spec's rules say. About 4,800 rows.
+- Real run: **1,877,445 certified H-1B LCAs**, event dates 2022-09-26 to 2026-06-23, 51% new-hire. `annual_wage` is null on 2,338 rows (outside $20k to $1M).
+
+  | role group | rows | median wage |
+  |---|---|---|
+  | Software | 719,241 | $126,000 |
+  | Non-tech | 647,296 | $105,000 |
+  | Other tech | 282,557 | $104,520 |
+  | Data | 188,011 | $123,092 |
+  | Product | 40,340 | $151,819 |
+
+  | wage level | rows | median wage |
+  |---|---|---|
+  | I | 321,113 | $81,786 |
+  | II | 750,708 | $105,000 |
+  | III | 368,255 | $134,514 |
+  | IV | 294,478 | $160,000 |
+  | none | 142,891 | $141,383 |
+
+- Sanity test: median wage for Software roles worked in California is **$170,000** (allowed range $110k to $230k).

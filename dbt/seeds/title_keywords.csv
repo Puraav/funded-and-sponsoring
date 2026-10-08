@@ -1,0 +1,12 @@
+keyword,role_group,priority,only_soc
+product manager,Product,1,
+product owner,Product,1,
+program manager,Product,1,
+product,Product,2,11-3021
+data scientist,Data,3,
+data analyst,Data,3,
+data engineer,Data,3,
+analytics,Data,3,
+machine learning,Data,3,
+engineer,Software,4,15-1299
+developer,Software,4,15-1299

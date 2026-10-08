@@ -14,3 +14,11 @@ sources:
         description: Offering details for each filing, including industry group and amounts.
       - name: relatedpersons
         description: Executive officers, directors and promoters named on each filing.
+
+  - name: lca
+    description: DOL LCA disclosure data (H-1B, H-1B1, E-3), parsed to parquet by `python -m fundsponsor.fetch_lca`.
+    meta:
+      external_location: "{{ env_var('FS_DATA_DIR', var('raw_dir')) }}/lca/{name}.parquet"
+    tables:
+      - name: lca_all
+        description: One row per LCA case, de-duplicated across the quarterly files (latest file wins).

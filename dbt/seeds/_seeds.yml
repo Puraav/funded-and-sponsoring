@@ -36,3 +36,38 @@ seeds:
     columns:
       - name: industry_group
         tests: [unique, not_null]
+
+  - name: soc_role_groups
+    description: Occupation (SOC) codes that map straight to a role group. Other 15-xxxx codes are "Other tech"; everything else is "Non-tech".
+    config:
+      column_types: {soc_code: varchar, role_group: varchar}
+    columns:
+      - name: soc_code
+        description: First seven characters of the SOC code, e.g. `15-1252`.
+        tests: [unique, not_null]
+      - name: role_group
+        tests:
+          - accepted_values:
+              arguments:
+                values: [Software, Data]
+
+  - name: title_keywords
+    description: >
+      Job-title keywords that set the role group. A keyword match wins over the SOC code; the
+      lowest `priority` wins when several match. When `only_soc` is filled, the keyword counts
+      only for that SOC code.
+    config:
+      column_types: {keyword: varchar, role_group: varchar, priority: integer, only_soc: varchar}
+    columns:
+      - name: keyword
+        description: Lower-case text looked for inside the job title.
+        tests: [unique, not_null]
+      - name: role_group
+        tests:
+          - accepted_values:
+              arguments:
+                values: [Software, Data, Product]
+      - name: priority
+        tests: [not_null]
+      - name: only_soc
+        description: If set, the keyword applies only to this SOC code.

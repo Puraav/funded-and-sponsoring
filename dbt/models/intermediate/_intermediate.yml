@@ -51,3 +51,52 @@ models:
           True when this is the company's first original Form D in the data, which starts in
           October 2022. Earlier raises cannot be seen.
         tests: [not_null]
+
+  - name: int_lca_h1b
+    description: >
+      One row per certified H-1B LCA (`visa_class = 'H-1B'`, `case_status = 'Certified'`), with
+      an event date, a new-hire flag, an annualised wage and a role group. Cases later withdrawn
+      ("Certified - Withdrawn") are not counted.
+    columns:
+      - name: case_number
+        tests: [unique, not_null]
+      - name: event_date
+        description: Date the application was received, or the decision date if that is missing.
+        tests: [not_null]
+      - name: received_date
+      - name: decision_date
+      - name: employer_name
+        tests: [not_null]
+      - name: trade_name_dba
+      - name: employer_address1
+      - name: employer_city
+      - name: employer_state
+      - name: employer_zip5
+      - name: worksite_city
+      - name: worksite_state
+      - name: worksite_zip5
+      - name: job_title
+      - name: soc_code
+        description: First seven characters of the SOC code, e.g. `15-1252`.
+      - name: soc_title
+      - name: total_worker_positions
+      - name: is_new_hire
+        description: True when the LCA is for a worker new to the employer (`new_employment > 0` or `change_employer > 0`), not an extension.
+        tests: [not_null]
+      - name: annual_wage
+        description: >
+          Offered wage per year in US dollars: `wage_rate_of_pay_from` times 1 (Year), 12 (Month),
+          26 (Bi-Weekly), 52 (Week) or 2080 (Hour). Null outside $20,000 to $1,000,000.
+      - name: role_group
+        description: Software, Data, Product, Other tech or Non-tech. Title keywords win over the SOC code.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [Software, Data, Product, Other tech, Non-tech]
+      - name: pw_wage_level
+        description: Prevailing wage level I, II, III or IV; null when the wage came from another source.
+        tests:
+          - accepted_values:
+              arguments:
+                values: [I, II, III, IV]

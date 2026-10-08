@@ -99,3 +99,64 @@ models:
       - name: relationship_2
       - name: relationship_3
       - name: source_quarter
+
+  - name: stg_lca
+    description: >
+      One row per LCA case (H-1B, H-1B1 and E-3), every status, cleaned and typed. An LCA is the
+      wage application an employer files with the Department of Labor before an H-1B petition.
+    columns:
+      - name: case_number
+        description: DOL case number, the key of an LCA.
+        tests: [unique, not_null]
+      - name: case_status
+        tests:
+          - accepted_values:
+              arguments:
+                values: ["Certified", "Certified - Withdrawn", "Withdrawn", "Denied"]
+      - name: received_date
+        description: Date DOL received the application.
+      - name: decision_date
+        description: Date of the latest decision on the case.
+      - name: visa_class
+        description: "`H-1B`, `H-1B1 Chile`, `H-1B1 Singapore` or `E-3 Australian`."
+      - name: job_title
+      - name: soc_code
+        description: Occupation code as filed, e.g. `15-1252.00`.
+      - name: soc_title
+      - name: is_full_time
+      - name: begin_date
+        description: Intended employment start date.
+      - name: total_worker_positions
+      - name: new_employment
+        description: Positions for workers new to the employer.
+      - name: continued_employment
+        description: Positions that extend a current worker.
+      - name: change_employer
+        description: Positions for workers moving from another H-1B employer.
+      - name: employer_name
+        description: Employer's legal name as filed, with whitespace collapsed.
+      - name: trade_name_dba
+        description: Trade name ("doing business as"), when given.
+      - name: employer_address1
+      - name: employer_city
+      - name: employer_state
+        description: Two-letter state, upper case.
+      - name: employer_postal_code
+      - name: employer_zip5
+        description: First five digits of the employer's ZIP code.
+      - name: naics_code
+      - name: worksite_city
+      - name: worksite_state
+      - name: worksite_zip5
+      - name: wage_rate_of_pay_from
+        description: Offered wage (bottom of the range) in `wage_unit_of_pay`.
+      - name: wage_rate_of_pay_to
+      - name: wage_unit_of_pay
+        description: Year, Month, Bi-Weekly, Week or Hour.
+      - name: prevailing_wage
+      - name: pw_unit_of_pay
+      - name: pw_wage_level
+        description: Prevailing wage level I to IV as filed; I and II are early-career.
+      - name: fiscal_year
+        description: DOL fiscal year (October to September) of the file the row came from.
+      - name: fiscal_quarter
