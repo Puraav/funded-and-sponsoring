@@ -37,7 +37,7 @@ def test_keeps_only_the_spec_columns(lca):
 
 
 def test_dedupes_on_case_number_keeping_the_latest_file(lca):
-    assert len(lca) == 22  # 20 + 3 rows, one case in both files
+    assert len(lca) == 26  # 20 + 7 rows, one case in both files
     repeated = lca.loc["I-200-24085-000020"]
     assert repeated["CASE_STATUS"] == "Certified - Withdrawn"
     assert repeated["source_file"] == "LCA_Disclosure_Data_FY2024_Q3.xlsx"

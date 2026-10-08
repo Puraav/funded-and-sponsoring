@@ -255,6 +255,23 @@ FILINGS = [
         merger="true",
         note="dropped: business combination",
     ),
+    dict(
+        q="2024Q1",
+        acc="0009000010-24-000001",
+        cik="0009000010",
+        name="Nova, Inc.",
+        street="1000 Fixture Pl",
+        city="San Francisco",
+        state="CA",
+        zip="94107",
+        filed="10-JAN-2024",
+        type="D",
+        industry="Other Technology",
+        sale="2024-01-02",
+        offered="3000000",
+        sold="3000000",
+        note="kept: generic name, so it may only match an employer in the same ZIP",
+    ),
 ]
 
 
@@ -324,6 +341,35 @@ EMPLOYERS = {
         "78701",
         "541511",
     ),
+    # Other records of the fixture startups, one per matching rule
+    "quillfern_oak": (
+        "Quillfern Robotics Inc.",
+        "",
+        "5 Dock Rd",
+        "Oakland",
+        "CA",
+        "94612",
+        "541715",
+    ),  # rule 2: same name, another Bay Area ZIP
+    "marrowgate_la": (
+        "Marrowgate Health",
+        "",
+        "9 Sunset Blvd",
+        "Los Angeles",
+        "CA",
+        "90012",
+        "541714",
+    ),  # rule 3: same name, elsewhere in California
+    "quillfern_typo": (
+        "Quillfern Robotic Inc",
+        "",
+        "7 Fixture St",
+        "San Francisco",
+        "CA",
+        "94105",
+        "541715",
+    ),  # rule 4: one letter off, same 3-digit ZIP
+    "nova_la": ("Nova Inc", "", "1 Venice Way", "Los Angeles", "CA", "90291", "541511"),
 }
 
 
@@ -383,7 +429,7 @@ def _lca(
     )
 
 
-# Every row is invented. 20 rows in the first file, 3 in the second (one case repeats).
+# Every row is invented. 20 rows in the first file, 7 in the second (one case repeats).
 LCA_FILES = {
     ("LCA_Disclosure_Data_FY2024_Q2.xlsx", 2024, 2): [
         # Quillfern: sponsored BEFORE its first raise (Oct 2023) and after it
@@ -632,6 +678,47 @@ LCA_FILES = {
             "15-1243.00",
             "Database Architects",
             158000,
+            level="II",
+        ),
+        _lca(
+            "I-200-24140-000023",
+            "quillfern_oak",
+            "2024-05-20",
+            "Firmware Engineer",
+            "17-2061.00",
+            "Computer Hardware Engineers",
+            149000,
+            level="II",
+        ),
+        _lca(
+            "I-200-24141-000024",
+            "marrowgate_la",
+            "2024-05-21",
+            "Lab Operations Manager",
+            "11-9121.00",
+            "Natural Sciences Managers",
+            140000,
+            level="III",
+        ),
+        _lca(
+            "I-200-24142-000025",
+            "quillfern_typo",
+            "2024-05-22",
+            "Controls Engineer",
+            "17-2071.00",
+            "Electrical Engineers",
+            145000,
+            level="II",
+        ),
+        # A different company that happens to be called Nova: must not match the startup
+        _lca(
+            "I-200-24143-000026",
+            "nova_la",
+            "2024-05-23",
+            "Software Engineer",
+            "15-1252.00",
+            "Software Developers",
+            130000,
             level="II",
         ),
     ],

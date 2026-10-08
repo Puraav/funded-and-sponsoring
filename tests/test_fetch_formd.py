@@ -23,11 +23,11 @@ def test_run_writes_one_parquet_per_table(tmp_path):
         assert (tmp_path / f"{table.lower()}.parquet").exists()
 
     submissions = pd.read_parquet(tmp_path / "formdsubmission.parquet")
-    assert len(submissions) == 12
+    assert len(submissions) == 13
     assert set(submissions["quarter"]) == {"2023q3", "2023q4", "2024q1"}
     assert submissions["ACCESSIONNUMBER"].is_unique
-    # 12 primary issuers plus one extra non-primary issuer
-    assert len(tables["ISSUERS"]) == 13
+    # 13 primary issuers plus one extra non-primary issuer
+    assert len(tables["ISSUERS"]) == 14
 
 
 def test_dates_parse_from_both_sec_formats(tmp_path):

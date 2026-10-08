@@ -71,3 +71,21 @@ seeds:
         tests: [not_null]
       - name: only_soc
         description: If set, the keyword applies only to this SOC code.
+
+  - name: generic_names
+    description: Common one-word company names. A startup with one of these as its whole name key may only match an employer in the very same ZIP code.
+    config:
+      column_types: {name_key: varchar}
+    columns:
+      - name: name_key
+        tests: [unique, not_null]
+
+  - name: name_cases
+    description: Test cases for the `normalise_name` macro (raw name and the key it must produce).
+    config:
+      column_types: {raw: varchar, expected: varchar}
+    columns:
+      - name: raw
+        tests: [unique, not_null]
+      - name: expected
+        tests: [not_null]

@@ -33,3 +33,24 @@ Output: `cik, company, employer_name, employer_zip5, tier`.
 ## Done when
 - Match rate by tier printed; sample labelled; precision ≥ 90% per kept tier
 - Commit `step 06: entity matching in dbt`
+
+## Notes from build
+**Status: built up to the labelling step. Waiting for `data/match_sample.csv` to be labelled; `match_labels`, `mart_match_quality`, `fct_lca_events` and the precision test come after.**
+
+- `normalise_name` removes legal suffixes **only at the end of the name** (repeatedly), not anywhere in it, so "The Browser Company of New York, Inc." keeps "company". It also drops a trailing SEC state tag (`/DE/`, `\DE`), turns `&` into "and", and removes dots and apostrophes without leaving a space (`L.L.C.` → `llc`, `Luke's` → `lukes`). Tested on 16 cases in the `name_cases` seed.
+- Two helper models were added: `int_match_candidates` (every pair with the strictest rule it passes) feeds both `int_matches` and `int_match_conflicts`.
+- `int_matches` has `match_rule` (1 to 4) as well as `tier`, so precision can be judged per rule: rules 1 and 2 are `high`, 3 and 4 are `medium`.
+- LCA employers are keyed on their legal name **and** their trade name, which finds renamed companies: Harvey AI Corp ↔ "Counsel AI Corporation" (dba Harvey AI), FlowFuse ↔ "FlowForge Inc" (dba FlowFuse).
+- A startup's key comes from every name and ZIP it used across its raises, so a rule 1 match can be on an earlier address than the one in `dim_company`.
+- Real run: **546 of 1,694 startups (32.2%) match at least one H-1B employer**, 785 pairs, 19,805 certified H-1B LCAs.
+
+  | rule | tier | pairs | startups |
+  |---|---|---|---|
+  | 1 same name, same ZIP | high | 564 | 456 |
+  | 2 same name, Bay Area | high | 208 | 177 |
+  | 3 same name, California | medium | 12 | 10 |
+  | 4 fuzzy, same 3-digit ZIP | medium | 1 | 1 |
+
+- No conflicts on real data (`int_match_conflicts` is empty).
+- Known misses, by design: 17 startups whose only same-name employer is outside California (e.g. ConductorOne in Oregon, AtScale in Massachusetts), and 9 startups with short names blocked by the generic rule because the employer is in a different Bay Area ZIP (e.g. AiFi, Lilt, Vooma).
+- The sample has 80 rows: 24 from rule 1, 23 from rule 2, all 12 from rule 3, the 1 from rule 4, and 20 unmatched startups. Unmatched rows show the closest-named California employer that shares the startup's first word, when there is one, so a missed match can be seen.

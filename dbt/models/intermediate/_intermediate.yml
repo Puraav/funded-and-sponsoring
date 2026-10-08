@@ -100,3 +100,97 @@ models:
           - accepted_values:
               arguments:
                 values: [I, II, III, IV]
+
+  - name: int_name_keys
+    description: >
+      One row per distinct name and ZIP on each side of the match: Form D startups, and LCA
+      employers under both their legal name and their trade name. `name_key` comes from the
+      `normalise_name` macro.
+    columns:
+      - name: source
+        tests:
+          - accepted_values:
+              arguments:
+                values: [formd, lca]
+      - name: cik
+        description: Startup's CIK; null for LCA employers.
+      - name: entity_name
+        description: Legal name of the startup or employer.
+      - name: matched_on
+        description: The name the key was built from (the legal name, or the employer's trade name).
+      - name: zip5
+      - name: state
+      - name: name_key
+        description: Normalised name used for matching.
+        tests: [not_null]
+      - name: first_token
+        description: First word of `name_key`; a blocking key for fuzzy matching.
+      - name: zip3
+        description: First three digits of the ZIP; a blocking key for fuzzy matching.
+      - name: is_generic
+        description: True when the key is one word of five letters or fewer, or a common word in the `generic_names` seed.
+
+  - name: int_match_candidates
+    description: >
+      Startup-to-employer pairs that pass a matching rule, with the strictest rule each pair
+      passes. Rule 1: same name key and same ZIP. Rule 2: same name key, employer in the Bay
+      Area. Rule 3: same name key, employer in California. Rule 4: name keys at least 0.97
+      Jaro-Winkler similar, same first word and same 3-digit ZIP. Generic names only use rule 1.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [cik, employer_name, employer_zip5]
+    columns:
+      - name: cik
+      - name: employer_name
+      - name: employer_zip5
+      - name: match_rule
+        tests:
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4]
+                quote: false
+
+  - name: int_match_conflicts
+    description: Employers whose best rule matches more than one startup. They are dropped from `int_matches` and listed here.
+    columns:
+      - name: employer_name
+      - name: employer_zip5
+      - name: cik
+      - name: company
+      - name: match_rule
+
+  - name: int_matches
+    description: >
+      Final matches between startups and H-1B employers. An employer (name and ZIP) is matched
+      to at most one startup; a startup can have several employer records (other offices, a
+      trade name, small spelling differences).
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [cik, employer_name, employer_zip5]
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [employer_name, employer_zip5]
+    columns:
+      - name: cik
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_company')
+                field: cik
+      - name: company
+        description: Startup's latest legal name.
+      - name: employer_name
+        tests: [not_null]
+      - name: employer_zip5
+        tests: [not_null]
+      - name: match_rule
+        description: The rule (1 to 4) that produced the match; see `int_match_candidates`.
+      - name: tier
+        description: "`high` for rules 1 and 2, `medium` for rules 3 and 4."
+        tests:
+          - accepted_values:
+              arguments:
+                values: [high, medium]

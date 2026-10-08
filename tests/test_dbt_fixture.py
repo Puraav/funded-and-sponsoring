@@ -42,6 +42,7 @@ def test_only_bay_area_startup_raises_are_kept(warehouse):
         ("0009000001-24-000003", "$10–50M", False),  # Quillfern, second raise
         ("0009000004-23-000001", "unknown", True),  # Marrowgate, nothing sold yet
         ("0009000007-24-000001", "<$2M", False),  # Nimbus, raised before the cut-off too
+        ("0009000010-24-000001", "$2–10M", True),  # Nova
     ]
 
 
@@ -52,13 +53,14 @@ def test_dim_company_is_one_row_per_company(warehouse):
     assert rows == [
         ("marrowgate-health-corp", "Santa Clara", 1, 0),
         ("nimbus-thistle-ai-inc", "Alameda", 1, 750_000),
+        ("nova-inc", "San Francisco", 1, 3_000_000),
         ("quillfern-robotics-inc", "San Francisco", 2, 30_000_000),
     ]
 
 
 def test_only_certified_h1b_cases_are_events(warehouse):
     cases = {row[0] for row in warehouse.sql("select case_number from int_lca_h1b").fetchall()}
-    assert len(cases) == 18
+    assert len(cases) == 22
     # Withdrawn, E-3, H-1B1 and certified-then-withdrawn cases are not sponsoring events.
     assert not cases & {
         "I-200-24040-000007",
@@ -87,3 +89,28 @@ def test_role_groups_wages_and_new_hire_flag(warehouse):
     assert rows["I-200-24006-000018"][1] is None  # $5M a year is a typo, not a wage
     assert rows["I-200-24100-000021"][0] == "Product"
     assert rows["I-200-24130-000022"][0] == "Data"
+
+
+def test_each_matching_rule(warehouse):
+    rows = warehouse.sql(
+        """select company, employer_name, employer_zip5, match_rule, tier
+           from int_matches order by company, match_rule"""
+    ).fetchall()
+    assert rows == [
+        # legal suffix differs (Corp / Corporation), same ZIP
+        ("Marrowgate Health Corp", "Marrowgate Health Corporation", "94301", 1, "high"),
+        ("Marrowgate Health Corp", "Marrowgate Health", "90012", 3, "medium"),
+        ("Nimbus Thistle AI, Inc.", "Nimbus Thistle AI, Inc.", "94704", 1, "high"),
+        ("Quillfern Robotics, Inc.", "QUILLFERN ROBOTICS INC", "94107", 1, "high"),
+        ("Quillfern Robotics, Inc.", "Quillfern Robotics Inc.", "94612", 2, "high"),
+        ("Quillfern Robotics, Inc.", "Quillfern Robotic Inc", "94105", 4, "medium"),
+    ]
+
+
+def test_generic_name_does_not_match_outside_its_zip(warehouse):
+    generic = warehouse.sql(
+        "select is_generic from int_name_keys where source = 'formd' and name_key = 'nova'"
+    ).fetchone()[0]
+    assert generic
+    assert not warehouse.sql("select 1 from int_matches where company = 'Nova, Inc.'").fetchall()
+    assert not warehouse.sql("select 1 from int_match_conflicts").fetchall()
