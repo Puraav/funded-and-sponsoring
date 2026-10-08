@@ -1,0 +1,101 @@
+version: 2
+
+models:
+  - name: stg_formd_submissions
+    description: One row per Form D filing (original `D` or amendment `D/A`), cleaned and typed.
+    columns:
+      - name: accession_number
+        description: SEC accession number, the key of a filing.
+        tests: [unique, not_null]
+      - name: filing_date
+        description: Date the filing was accepted by the SEC.
+        tests: [not_null]
+      - name: submission_type
+        description: "`D` for an original notice, `D/A` for an amendment."
+        tests:
+          - accepted_values:
+              arguments:
+                values: ["D", "D/A"]
+      - name: test_or_live
+        description: "`LIVE` for real filings."
+      - name: source_quarter
+        description: The quarterly data set the row came from, e.g. `2024q1`.
+
+  - name: stg_formd_issuers
+    description: Issuers named on each filing. A filing has one primary issuer and sometimes co-issuers.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [accession_number, issuer_seq]
+    columns:
+      - name: accession_number
+        tests: [not_null]
+      - name: is_primary_issuer
+        description: True for the one primary issuer of the filing.
+      - name: issuer_seq
+        description: Order of the issuer within the filing.
+      - name: cik
+        description: SEC Central Index Key of the issuer, 10 characters with leading zeros.
+        tests: [not_null]
+      - name: entity_name
+        description: Issuer's legal name as filed, with whitespace collapsed.
+      - name: street1
+      - name: street2
+      - name: city
+      - name: state
+        description: Two-letter US state, or a country code for foreign issuers.
+      - name: zipcode
+        description: ZIP or postal code as filed.
+      - name: zip5
+        description: First five digits of a US ZIP code; null when the code does not start with five digits.
+      - name: jurisdiction_of_inc
+      - name: entity_type
+      - name: year_of_inc_timespan
+      - name: year_of_inc
+      - name: source_quarter
+
+  - name: stg_formd_offerings
+    description: Offering details, one row per filing. Amounts are US dollars as self-reported by the issuer.
+    columns:
+      - name: accession_number
+        tests: [unique, not_null]
+      - name: industry_group
+        description: Industry group the issuer picked on the form.
+      - name: investment_fund_type
+        description: Filled only when the issuer is a pooled investment fund.
+      - name: is_amendment
+      - name: first_sale_date
+        description: Date of first sale; null when the first sale is yet to occur.
+      - name: sale_yet_to_occur
+      - name: is_equity
+      - name: is_debt
+      - name: is_pooled_fund_interest
+        description: True when the securities sold are interests in a pooled investment fund.
+      - name: is_business_combination
+        description: True when the offering is part of a merger or acquisition.
+      - name: revenue_range
+      - name: amount_offered
+        description: Total offering amount; null when filed as "Indefinite".
+      - name: amount_sold
+        description: Total amount sold so far.
+      - name: investor_count
+      - name: source_quarter
+
+  - name: stg_formd_people
+    description: Related persons (executive officers, directors, promoters) named on each filing.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [accession_number, person_seq]
+    columns:
+      - name: accession_number
+        tests: [not_null]
+      - name: person_seq
+      - name: first_name
+      - name: middle_name
+      - name: last_name
+      - name: relationship_1
+        description: Executive Officer, Director or Promoter.
+      - name: relationship_2
+      - name: relationship_3
+      - name: source_quarter

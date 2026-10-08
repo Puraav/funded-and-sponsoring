@@ -3,5 +3,6 @@ fundsponsor:
   outputs:
     dev:
       type: duckdb
-      path: ../data/warehouse.duckdb
+      # FS_WAREHOUSE lets tests build into a throwaway file instead of the real warehouse.
+      path: "{{ env_var('FS_WAREHOUSE', '../data/warehouse.duckdb') }}"
       threads: 4

@@ -1,0 +1,53 @@
+version: 2
+
+models:
+  - name: int_bay_area_raises
+    description: >
+      One row per startup raise: an original Form D (not an amendment) filed on or after
+      2023-10-01 by a primary issuer whose ZIP is in the nine Bay Area counties, whose industry
+      group is not a fund, finance or real estate, and whose name does not look like a fund or SPV.
+      Also dropped: business-combination filings (mergers, buyouts), limited partnerships, and
+      LLCs filing under the catch-all "Other" industry (nearly all SPVs and property deals).
+    columns:
+      - name: accession
+        description: SEC accession number of the Form D.
+        tests: [unique, not_null]
+      - name: cik
+        description: SEC Central Index Key of the company.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_company')
+                field: cik
+      - name: company
+        description: Legal name as filed.
+        tests: [not_null]
+      - name: street
+      - name: city
+      - name: zip5
+        tests: [not_null]
+      - name: county_name
+        description: One of the nine Bay Area counties.
+        tests: [not_null]
+      - name: industry
+        description: Form D industry group.
+      - name: filing_date
+        tests: [not_null]
+      - name: first_sale_date
+        description: Date of first sale in the offering; null if not yet sold.
+      - name: amount_sold
+        description: US dollars sold so far, self-reported.
+      - name: amount_offered
+        description: US dollars offered; null when "Indefinite".
+      - name: round_bin
+        description: Size bucket of `amount_sold`. `unknown` when nothing has been sold yet.
+        tests:
+          - accepted_values:
+              arguments:
+                values: ["<$2M", "$2–10M", "$10–50M", "$50M+", "unknown"]
+      - name: is_first_raise
+        description: >
+          True when this is the company's first original Form D in the data, which starts in
+          October 2022. Earlier raises cannot be seen.
+        tests: [not_null]

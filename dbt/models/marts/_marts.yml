@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: dim_company
+    description: One row per startup (SEC CIK) with at least one Bay Area raise, using its latest filed name and address.
+    columns:
+      - name: cik
+        description: SEC Central Index Key.
+        tests: [unique, not_null]
+      - name: company
+        description: Legal name on the latest raise.
+        tests: [not_null]
+      - name: city
+      - name: zip5
+      - name: county_name
+      - name: industry
+        description: Form D industry group on the latest raise.
+      - name: first_raise_date
+        tests: [not_null]
+      - name: latest_raise_date
+        tests: [not_null]
+      - name: raise_count
+        description: Number of original Form D filings since 2023-10-01.
+        tests: [not_null]
+      - name: total_sold
+        description: Sum of `amount_sold` over those raises, in US dollars.
+      - name: company_slug
+        description: URL-safe, unique identifier used by the website.
+        tests: [unique, not_null]

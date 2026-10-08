@@ -1,0 +1,16 @@
+version: 2
+
+sources:
+  - name: formd
+    description: SEC Form D quarterly data sets, parsed to parquet by `python -m fundsponsor.fetch_formd`.
+    meta:
+      external_location: "{{ env_var('FS_DATA_DIR', var('raw_dir')) }}/formd/{name}.parquet"
+    tables:
+      - name: formdsubmission
+        description: One row per Form D or D/A filing.
+      - name: issuers
+        description: Issuers named on each filing; exactly one is the primary issuer.
+      - name: offering
+        description: Offering details for each filing, including industry group and amounts.
+      - name: relatedpersons
+        description: Executive officers, directors and promoters named on each filing.

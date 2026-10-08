@@ -29,3 +29,19 @@
 - `dbt build --select +int_bay_area_raises+` green on real data
 - Print (via `dbt show` or a small script): raises per quarter, by county, by round bin, top 20 industries, and 15 random rows. **Pause so the user can check they look like startups, not funds.**
 - Commit `step 04: dbt Form D models`
+
+## Notes from build
+- **Name and industry filters alone were not enough.** After the spec's filters, about 1 in 9 rows was still an SPV, a property deal or a buyout vehicle, almost all of them LLCs filed under the catch-all industry "Other" (e.g. "X, a series of Y Master LLC", "2700 Atlanta LLC", "Freight Topco, LLC"). Three rules were added to `int_bay_area_raises`:
+  1. drop filings flagged as a **business combination** (mergers and buyouts are not fundraises),
+  2. drop **limited partnerships**,
+  3. drop **LLCs whose industry is "Other"**. LLCs in a named industry (restaurants, manufacturing, technology) stay.
+  Cost: a few real companies that are LLCs filing under "Other" are lost (e.g. Star Therapeutics LLC). Precision was preferred.
+- `fund_name_patterns.csv` gained 12 patterns: series-of-master-LLC wording, topco/holdco/midco/bidco, buyer, acquisition(s), investment/investor(s), co-invest, capital, "partners, LLC", opportunity, syndicate, and real-estate words.
+- Result on real data: 2,492 raises before the extra rules, **2,219 raises from 1,694 companies** after.
+- **Public companies remain.** Listed companies file Form D for private placements (e.g. Jaguar Health, Tenon Medical). They are operating companies that raised money, so they are kept, but they are not startups in the everyday sense.
+- `round_bin` is `unknown` when `amount_sold` is null or 0 (first sale yet to occur).
+- `is_first_raise` is computed over every original Form D since October 2022, before the 2023-10-01 cut-off is applied, so a company that also raised in early 2023 is not called a first raise. Raises before October 2022 cannot be seen.
+- `company_slug` appends the CIK (without leading zeros) only when two companies share a name.
+- `raw_dir` cannot use `env_var()` inside `dbt_project.yml` (vars are not rendered), so the source location reads `env_var('FS_DATA_DIR', var('raw_dir'))` directly.
+- `dbt/profiles.yml` reads `FS_WAREHOUSE` so tests build into a throwaway DuckDB file rather than the real warehouse.
+- CI coverage is a pytest (`tests/test_dbt_fixture.py`) that runs `dbt build` on `tests/fixtures/raw` and asserts exactly which fixture filings survive.

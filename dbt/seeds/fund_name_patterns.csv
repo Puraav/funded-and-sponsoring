@@ -1,0 +1,22 @@
+pattern,reason
+\bfund\b,fund
+\blp\b,limited partnership
+\bl\.p\.,limited partnership
+capital partners,investment firm
+ventures? (fund|partners),venture fund
+holdings? lp,holding partnership
+\bspv\b,special purpose vehicle
+series [a-z0-9]+ of,series of a master LLC
+\breit\b,real estate investment trust
+\ba series of\b,series of a master LLC
+\bmaster llc\b,series of a master LLC
+\b(topco|holdco|midco|bidco)\b,acquisition vehicle
+\bbuyer\b,acquisition vehicle
+\bacquisitions?\b,acquisition vehicle
+\binvest(ment|ments|or|ors)\b,investment vehicle
+\bco-?invest,investment vehicle
+\bcapital\b,investment firm
+"partners,? l\.?l\.?c",investment vehicle
+\bopportunit(y|ies)\b,investment vehicle
+\bsyndicate\b,investment vehicle
+\b(apartments?|properties|realty|real estate|housing)\b,real estate

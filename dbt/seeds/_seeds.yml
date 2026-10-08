@@ -1,0 +1,38 @@
+version: 2
+
+seeds:
+  - name: bay_area_zips
+    description: >
+      ZIP codes whose main county (largest land-area overlap in the Census 2020 ZCTA-county
+      relationship file) is one of the nine Bay Area counties. Built by
+      `python -m fundsponsor.make_seeds`.
+    config:
+      column_types: {zip: varchar, county_fips: varchar, county_name: varchar}
+    columns:
+      - name: zip
+        description: 5-character ZIP code.
+        tests: [unique, not_null]
+      - name: county_fips
+        tests: [not_null]
+      - name: county_name
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [Alameda, Contra Costa, Marin, Napa, San Francisco, San Mateo, Santa Clara, Solano, Sonoma]
+
+  - name: fund_name_patterns
+    description: Regular expressions (matched on the lower-cased issuer name) that mark funds and SPVs, which are not startups.
+    config:
+      column_types: {pattern: varchar, reason: varchar}
+    columns:
+      - name: pattern
+        tests: [unique, not_null]
+
+  - name: excluded_industry_groups
+    description: Form D industry groups that are funds, finance or real estate rather than operating startups.
+    config:
+      column_types: {industry_group: varchar, reason: varchar}
+    columns:
+      - name: industry_group
+        tests: [unique, not_null]
