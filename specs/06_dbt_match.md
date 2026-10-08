@@ -1,0 +1,35 @@
+# Spec 06 — dbt: match startups to H-1B employers (the hard part, in SQL)
+
+Precision beats recall: a wrong match puts a false number in the findings.
+
+## Name keys
+Write a dbt macro `normalise_name(col)`: lowercase → remove punctuation → remove legal suffixes as whole words (`inc, incorporated, corp, corporation, co, company, llc, l l c, ltd, limited, pbc, plc, lp`) → remove leading "the" → collapse spaces → trim. Keep words like labs, ai, technologies.
+- `int_name_keys`: one row per distinct (source, name, zip5) for both Form D companies and LCA employers (`employer_name` and `trade_name_dba`), with `name_key`, `first_token`, `zip3`, `is_generic` (key is one word of ≤ 5 letters, or appears in a `generic_names` seed you write with ~50 common words like mercury, ramp, nova, atlas, apex).
+
+## `int_matches`: tiers, stop at the first that matches
+1. Same `name_key` + same `zip5` → `high`
+2. Same `name_key` + employer ZIP in `bay_area_zips` → `high`
+3. Same `name_key`, employer in CA → `medium`
+4. Fuzzy: DuckDB `jaro_winkler_similarity(a, b) ≥ 0.97` within the same `zip3` and same `first_token` (blocking) → `medium`
+Rules:
+- `is_generic` names may only match in tier 1.
+- If one LCA employer matches more than one CIK, keep the best tier; on a tie, drop both and record them in `int_match_conflicts`.
+Output: `cik, company, employer_name, employer_zip5, tier`.
+
+## Validation (required)
+1. `python -m fundsponsor.match_sample` writes `data/match_sample.csv`: 60 matched pairs (20 per tier where available) + 20 unmatched startups, with names, addresses, tier, and an empty `correct` column.
+2. **Stop and ask the user to label it** (y/n). Then copy it to `dbt/seeds/match_labels.csv` and `dbt seed`.
+3. `mart_match_quality`: match rate overall and per tier, precision per tier from the labels, sample sizes.
+4. If any tier is below 90% precision, tighten or drop it, re-run, and re-check.
+
+## Then
+`fct_lca_events`: `int_lca_h1b` joined to `int_matches` → every certified H-1B LCA with its `cik`.
+
+## Tests
+- `unique` on (`cik`, `employer_name`, `employer_zip5`) in `int_matches`
+- singular test: every tier kept has precision ≥ 0.90 in `mart_match_quality`
+- macro unit test on 15 name cases (dbt unit tests or a singular test over a seed of `raw, expected`)
+
+## Done when
+- Match rate by tier printed; sample labelled; precision ≥ 90% per kept tier
+- Commit `step 06: entity matching in dbt`

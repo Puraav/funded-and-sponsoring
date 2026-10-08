@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fundsponsor"
+version = "0.1.0"
+description = "Which Bay Area startups that raise money go on to file for H-1B workers? SEC Form D x DOL LCA."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Puraav Ghuwalewala" }]
+dependencies = [
+    "requests>=2.31",
+    "python-dotenv>=1.0",
+    "pyarrow>=15",
+    "pandas>=2.2",
+    "openpyxl>=3.1",
+    "lxml>=5",
+    "duckdb>=1.1",
+    "matplotlib>=3.8",
+    "dbt-core>=1.9",
+    "dbt-duckdb>=1.9",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[tool.setuptools.packages.find]
+where = ["ingest"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = ["web", "dbt/dbt_packages", "dbt/target"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

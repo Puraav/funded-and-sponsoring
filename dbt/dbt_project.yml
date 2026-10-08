@@ -1,0 +1,24 @@
+name: fundsponsor
+version: "0.1.0"
+config-version: 2
+profile: fundsponsor
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+target-path: target
+clean-targets: ["target", "dbt_packages"]
+
+vars:
+  # Raw parquet folder. CI and tests point FS_DATA_DIR at tests/fixtures/raw.
+  raw_dir: "{{ env_var('FS_DATA_DIR', '../data/raw') }}"
+
+models:
+  fundsponsor:
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: table
+    marts:
+      +materialized: table
