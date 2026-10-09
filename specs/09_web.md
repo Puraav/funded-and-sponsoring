@@ -29,3 +29,17 @@ Keep the total under ~20 MB; print file count and size.
 - `npm run lint` and `npm run build` pass; `out/` is generated
 - Smoke test passes; Lighthouse scores printed
 - Commit `step 09: web app`
+
+## Notes from build
+- **Next.js 16.** `create-next-app` installed Next 16.4 with Tailwind 4. `cacheComponents` and `partialPrefetching` from its template were removed, as they do not apply to a static export.
+- **Four small dbt marts were added for the site**, so Python only dumps tables: `mart_companies` (the Explore index), `mart_company_monthly_lcas`, `mart_company_roles`, `mart_company_officers`.
+- **Pages:** 504 company pages (startups with at least one matched H-1B filing), plus `/`, `/explore`, `/radar`, `/method`. Explore lists all 1,614 startups; those without a matched filing are shown without a link.
+- **Data size:** 509 JSON files, 1.2 MB, committed under `web/public/data/` so Vercel can build without the pipeline.
+- **Charts** are Observable Plot, loaded on demand after first paint, each with a "View as table" fallback and hover tooltips. The site's charts use the same accent-on-grey style as the PNGs.
+- **Explore** renders 100 rows at a time with a "Show more" button; filters and sorting run over all rows in memory. CSV download exports the filtered rows.
+- **Dark mode** follows the system setting. Checked at 375 px wide in dark mode: no sideways scrolling on any page (also asserted in the smoke test).
+- **Open Graph:** each page has its own title and description; the preview image `web/public/og.png` (1200 x 630) is drawn by `python -m fundsponsor.charts` from the headline mart. `lib/site.ts` holds the site URL, defaulting to `https://funded-and-sponsoring.vercel.app` until the real one is known (`NEXT_PUBLIC_SITE_URL` overrides it).
+- **Officers:** name and relationship only. Addresses on the Form D are never exported (asserted in `tests/test_export_site.py`).
+- **Smoke test:** `npx playwright test` runs 5 tests against the static export served by `scripts/serve-out.mjs` (clean URLs and gzip, like the real host). All pass with no console errors.
+- **Lighthouse on `/` (mobile, simulated throttling):** performance 98, accessibility 100. The first run scored 75 / 95: the local server sent files uncompressed, and Plot's internal `aria-label`s on `<g>` elements are invalid ARIA. Both fixed (gzip in the test server; inner labels removed, the wrapper carries the chart's label).
+- The radar page shows an empty state until spec 10 fills `radar.json`.

@@ -282,6 +282,22 @@ def chart_match_quality(warehouse, out_dir: Path) -> Path:
     return save(figure, "06_match_quality.png", out_dir)
 
 
+def og_image(warehouse, out_dir: Path) -> Path:
+    """The 1200 x 630 link-preview image for the site: the headline number and the question."""
+    headline = rows(warehouse, "select * from mart_sponsor_rate where metric = 'any'")[0]
+    figure = plt.figure(figsize=(6, 3.15), dpi=DPI)
+    figure.text(0.07, 0.86, "Funded & Sponsoring", fontsize=11, color=ACCENT, fontweight="bold",
+                va="top")  # fmt: skip
+    figure.text(0.07, 0.72, pct(headline["sponsor_rate"]), fontsize=54, color=INK,
+                fontweight="bold", va="top")  # fmt: skip
+    figure.text(0.07, 0.36, "of Bay Area startup raises are followed by an\n"
+                "H-1B filing from the same company within a year.",
+                fontsize=12.5, color=INK, va="top", linespacing=1.35)  # fmt: skip
+    figure.text(0.07, 0.08, f"n = {headline['n']:,} raises · SEC Form D × DOL LCA disclosure data",
+                fontsize=8, color=MUTED, va="bottom")  # fmt: skip
+    return save(figure, "og.png", out_dir)
+
+
 CHARTS = [
     chart_by_round, chart_history, chart_roles, chart_entry_level, chart_days,
     chart_match_quality,
@@ -294,7 +310,9 @@ def run(warehouse: duckdb.DuckDBPyConnection, out_dir: Path) -> list[Path]:
 
 def main() -> None:
     with duckdb.connect(str(config.WAREHOUSE), read_only=True) as warehouse:
-        for path in run(warehouse, config.CHARTS_DIR):
+        paths = run(warehouse, config.CHARTS_DIR)
+        paths.append(og_image(warehouse, config.WEB_DATA_DIR.parent))
+        for path in paths:
             print(f"wrote {path.relative_to(config.ROOT)}")
 
 

@@ -352,3 +352,85 @@ models:
                 max_value: 1
       - name: small_sample
         description: True when `n` is under 30; treat the rate as rough.
+
+  - name: mart_companies
+    description: >
+      One row per startup for the website's Explore table: its latest raise, whether it filed
+      for H-1B workers before that raise, and a summary of all its matched H-1B filings.
+    columns:
+      - name: company_slug
+        tests: [unique, not_null]
+      - name: cik
+        tests: [unique, not_null]
+      - name: company
+      - name: city
+      - name: county_name
+      - name: industry
+      - name: first_raise_date
+      - name: latest_raise_date
+      - name: raise_count
+      - name: total_sold
+      - name: round_bin
+        description: Size bucket of the latest raise.
+      - name: latest_amount_sold
+      - name: prior_24m
+        description: H-1B filings in the 24 months before the latest raise.
+      - name: after_12m
+        description: H-1B filings in the 12 months from the latest raise.
+      - name: sponsored_before
+        description: True when `prior_24m` is at least 1.
+      - name: has_full_followup
+        description: True when the latest raise has a full year of LCA data after it.
+      - name: lcas_total
+        description: All matched certified H-1B LCAs in the data (October 2022 onward).
+      - name: median_wage
+      - name: first_lca_date
+      - name: latest_lca_date
+      - name: role_groups
+        description: Comma-separated role groups the company has filed for.
+      - name: has_page
+        description: True when the company has at least one matched H-1B filing, so it gets its own page.
+
+  - name: mart_company_monthly_lcas
+    description: Matched H-1B filings per startup per calendar month.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [cik, month]
+    columns:
+      - name: cik
+      - name: month
+        description: First day of the month.
+      - name: lcas
+      - name: new_hire_lcas
+
+  - name: mart_company_roles
+    description: Matched H-1B filings per startup by role group, with median pay.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [cik, role_group]
+    columns:
+      - name: cik
+      - name: role_group
+      - name: lcas
+      - name: early_career_lcas
+        description: Filings at prevailing wage Level I or II.
+      - name: median_wage
+      - name: min_wage
+      - name: max_wage
+
+  - name: mart_company_officers
+    description: >
+      Executive officers named on each startup's latest Form D: name and relationship only,
+      as published by the SEC. Addresses on the form are not carried over.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [cik, person_seq]
+    columns:
+      - name: cik
+      - name: person_seq
+      - name: person_name
+      - name: relationships
+        description: Executive Officer, Director and/or Promoter.
