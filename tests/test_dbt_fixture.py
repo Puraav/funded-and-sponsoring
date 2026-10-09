@@ -114,3 +114,29 @@ def test_generic_name_does_not_match_outside_its_zip(warehouse):
     assert generic
     assert not warehouse.sql("select 1 from int_matches where company = 'Nova, Inc.'").fetchall()
     assert not warehouse.sql("select 1 from int_match_conflicts").fetchall()
+
+
+def test_events_are_lcas_of_matched_employers(warehouse):
+    rows = warehouse.sql(
+        """select companies.company, count(*)
+           from fct_lca_events as events
+           inner join dim_company as companies using (cik)
+           group by 1 order by 1"""
+    ).fetchall()
+    # Ferrowmont (never raised), Brindlewood (Texas) and the other Nova contribute nothing.
+    assert rows == [
+        ("Marrowgate Health Corp", 3),
+        ("Nimbus Thistle AI, Inc.", 3),
+        ("Quillfern Robotics, Inc.", 9),
+    ]
+
+
+def test_match_quality_has_a_row_per_rule_in_use(warehouse):
+    rows = warehouse.sql(
+        "select match_rule, pairs from mart_match_quality where scope = 'rule' order by 1"
+    ).fetchall()
+    assert rows == [(1, 3), (2, 1), (3, 1), (4, 1)]
+    matched, total = warehouse.sql(
+        "select startups, all_startups from mart_match_quality where scope = 'overall'"
+    ).fetchone()
+    assert (matched, total) == (3, 4)

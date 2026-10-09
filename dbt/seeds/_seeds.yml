@@ -89,3 +89,40 @@ seeds:
         tests: [unique, not_null]
       - name: expected
         tests: [not_null]
+
+  - name: match_labels
+    description: >
+      The hand-checked sample from `data/match_sample.csv`: 60 matched pairs and 20 unmatched
+      startups, each marked correct (y) or not (n) with the evidence used. Written by
+      `python -m fundsponsor.match_sample --to-seed`.
+    config:
+      column_types:
+        sample_type: varchar
+        match_rule: integer
+        tier: varchar
+        cik: varchar
+        company: varchar
+        employer_name: varchar
+        employer_zip5: varchar
+        correct: varchar
+        confidence: varchar
+        evidence: varchar
+    columns:
+      - name: sample_type
+        tests:
+          - accepted_values:
+              arguments:
+                values: [matched, unmatched]
+      - name: match_rule
+        description: Matching rule (1 to 4) for matched rows; empty for unmatched rows.
+      - name: correct
+        description: "`y` when the match (or the decision not to match) is right."
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["y", "n"]
+      - name: confidence
+        description: How strong the evidence behind the label is (high, medium, low).
+      - name: evidence
+        description: What the label is based on.

@@ -27,3 +27,85 @@ models:
       - name: company_slug
         description: URL-safe, unique identifier used by the website.
         tests: [unique, not_null]
+
+  - name: mart_match_quality
+    description: >
+      Match rate and checked precision of the startup-to-employer matching. One `overall` row,
+      one row per matching rule in use, and one `unmatched` row. Precision comes from the
+      hand-checked sample in the `match_labels` seed.
+    columns:
+      - name: scope
+        tests:
+          - accepted_values:
+              arguments:
+                values: [overall, rule, unmatched]
+      - name: match_rule
+        description: Rule number 1 to 4 on `rule` rows.
+      - name: rule_name
+      - name: tier
+        description: "`high` or `medium` on `rule` rows."
+      - name: pairs
+        description: Matched (startup, employer) pairs.
+      - name: startups
+        description: Startups covered by the row. A startup matched by several rules is counted under each.
+      - name: all_startups
+        description: Every startup in `dim_company`.
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "> 0"
+      - name: match_rate
+        description: "`startups / all_startups`."
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 1
+      - name: labelled
+        description: Sample rows checked by hand.
+      - name: labelled_correct
+      - name: match_precision
+        description: >
+          `labelled_correct / labelled`. On the `unmatched` row it is the share of checked
+          unmatched startups for which no match was the right answer.
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 1
+      - name: small_sample
+        description: True when fewer than 30 rows were checked, so the precision is rough.
+
+  - name: fct_lca_events
+    description: >
+      One row per sponsoring event: a certified H-1B LCA whose employer matched a startup.
+      An LCA is an application step before an H-1B petition, not an approved visa or a hire.
+    columns:
+      - name: case_number
+        tests: [unique, not_null]
+      - name: cik
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_company')
+                field: cik
+      - name: tier
+        description: Confidence tier of the match that links the employer to the startup.
+      - name: match_rule
+      - name: event_date
+        tests: [not_null]
+      - name: received_date
+      - name: decision_date
+      - name: employer_name
+      - name: employer_zip5
+      - name: worksite_city
+      - name: worksite_state
+      - name: job_title
+      - name: soc_code
+      - name: soc_title
+      - name: role_group
+      - name: pw_wage_level
+      - name: annual_wage
+      - name: is_new_hire
+      - name: total_worker_positions

@@ -1,0 +1,81 @@
+sample_type,match_rule,tier,cik,company,employer_name,employer_zip5,correct,confidence,evidence
+matched,1,high,0001640104,App Orchid Inc.,"APP ORCHID, INC",94583,y,high,Same street address on the Form D and the LCA.
+matched,1,high,0002093784,"Aria Networks, Inc.","Aria Networks, Inc.",94304,y,high,Same street address on the Form D and the LCA.
+matched,1,high,0001853446,"Auditoria.AI, Inc.","Auditoria.AI, Inc.",95128,y,high,Same street address on the Form D and the LCA.
+matched,1,high,0002031338,Brisk Labs Corp.,Brisk Labs Corp.,94024,y,high,Same street address on the Form D and the LCA.
+matched,1,high,0001809904,"Coreshell Technologies, Inc.","CORESHELL TECHNOLOGIES, INC.",94577,y,high,Same street address on the Form D and the LCA.
+matched,1,high,0001931896,"Corvus Robotics, Inc.",Corvus Robotics Inc.,94041,y,high,Same street address on the Form D and the LCA.
+matched,1,high,0002008800,"Dahlia Labs, Inc.",Dahlia Labs Inc,94010,y,high,Same street address on the Form D and the LCA.
+matched,1,high,0002046014,"Donobu, Inc.","Donobu, Inc.",94062,y,high,Same street address on the Form D and the LCA.
+matched,1,high,0001562446,"Everactive, Inc.","Everactive, Inc.",95131,y,high,Same street address on the Form D and the LCA.
+matched,1,high,0001752536,"Femtosense, Inc.",Femtosense Inc.,94066,y,high,Same street address on the Form D and the LCA.
+matched,1,high,0001686725,Groq LLC,"Groq, Inc.",95134,y,high,"Same street address on the Form D and the LCA. Form D names Groq LLC, the LCA names Groq, Inc."
+matched,1,high,0002022295,"Halo Industries, Inc.",Halo Industries,95054,y,high,Same street address on the Form D and the LCA.
+matched,1,high,0001829089,"Highnote Platform, Inc.","Highnote Platform, Inc.",94107,y,high,Same street address on the Form D and the LCA.
+matched,1,high,0002155699,Ironsite AI Inc.,Ironsite AI Inc.,94107,y,high,Same street address on the Form D and the LCA.
+matched,1,high,0001854188,"Kevala, Inc.","Kevala, Inc.",94104,y,high,Same street address on the Form D and the LCA.
+matched,1,high,0002080312,"Matic Robots, Inc.","Matic Robots, Inc.",94043,y,high,Same street address on the Form D and the LCA.
+matched,1,high,0002046192,"Mojave Energy Systems, Inc.","Mojave Energy Systems, Inc",94085,y,high,Same street address on the Form D and the LCA.
+matched,1,high,0002031748,Obvio Inc.,Obvio Inc,94070,y,high,Same street address on the Form D and the LCA.
+matched,1,high,0001703427,"OneSkin, Inc.","OneSkin, Inc.",94107,y,high,Same street address on the Form D and the LCA.
+matched,1,high,0001469367,Sunrun Inc.,"Sunrun, Inc.",94108,y,high,Same street address on the Form D and the LCA.
+matched,1,high,0002068907,"Tandem App, Inc.",Tandem App Inc.,94102,y,high,Same street address on the Form D and the LCA.
+matched,1,high,0001651006,Teamblind Inc.,Teamblind Inc.,94085,y,high,Same street address on the Form D and the LCA.
+matched,1,high,0002002695,X.AI CORP.,X.AI Corp.,94010,y,high,Same street address (216 Park Road); an earlier X.AI raise used the same Burlingame ZIP.
+matched,1,high,0001992584,"nEye Systems, Inc.","nEye Systems, Inc.",94608,y,high,Same street address (5980 Horton Street) on an earlier raise.
+matched,2,high,0001803829,"Arize AI, Inc.","Arize AI, Inc.",94549,y,medium,"Exact, distinctive company name in the same metro area; the two addresses differ, so this rests on the name. Mill Valley and Lafayette both look like home addresses."
+matched,2,high,0001853446,"Auditoria.AI, Inc.","Auditoria.AI, Inc.",95054,y,high,Same employer also files from the startup's own address (3031 Tisch Way); this is a second office.
+matched,2,high,0002033624,"Beacon AI, Inc.","Beacon AI, Inc.",94123,y,high,"Web: Beacon AI lists both 655 Skyway Rd, San Carlos and 2001 Union St, San Francisco as its offices."
+matched,2,high,0001863299,"Collective Hub, Inc.","Collective Hub, Inc.",94107,y,medium,"Exact, distinctive company name in the same metro area; the two addresses differ, so this rests on the name."
+matched,2,high,0002043374,"Decagon AI, Inc.","Decagon AI, Inc.",94107,y,medium,"Exact, distinctive company name in the same metro area; the two addresses differ, so this rests on the name."
+matched,2,high,0002048250,"Fourier Earth, Inc.","Fourier Earth, Inc.",94043,y,medium,"Exact, distinctive company name in the same metro area; the two addresses differ, so this rests on the name. Trade name on the LCA is Fourier."
+matched,2,high,0001974654,Harvey AI Corp,Counsel AI Corporation,94103,y,high,Counsel AI Corporation is Harvey's legal entity; its other LCA record carries the trade name 'Harvey AI'.
+matched,2,high,0001893901,Haus Analytics Inc.,"Haus Analytics, Inc",94107,y,medium,"Exact, distinctive company name in the same metro area; the two addresses differ, so this rests on the name."
+matched,2,high,0001772673,Hayden AI Technologies Inc.,"Hayden AI Technologies, Inc.",94607,y,medium,"Exact, distinctive company name in the same metro area; the two addresses differ, so this rests on the name."
+matched,2,high,0001829089,"Highnote Platform, Inc.","Highnote Platform, Inc.",94104,y,high,Same employer also files from the startup's own address (642 Harrison Street); this is another office.
+matched,2,high,0001837477,"Luminary Cloud, Inc.","Luminary Cloud, Inc.",94063,y,medium,"Exact, distinctive company name in the same metro area; the two addresses differ, so this rests on the name."
+matched,2,high,0001762155,MaintainX Inc.,"MaintainX, Inc.",94107,y,medium,"Exact, distinctive company name in the same metro area; the two addresses differ, so this rests on the name."
+matched,2,high,0001750284,"Olema Pharmaceuticals, Inc.","Olema Pharmaceuticals, Inc.",94107,y,medium,"Exact, distinctive company name in the same metro area; the two addresses differ, so this rests on the name. Trade name on the LCA is Olema Oncology."
+matched,2,high,0001799862,OneLook Inc.,"OneLook, Inc.",94041,y,medium,"Exact, distinctive company name in the same metro area; the two addresses differ, so this rests on the name. Trade name on the LCA is Lily AI; both in Mountain View."
+matched,2,high,0002030751,"Promptfoo, Inc.",Promptfoo Inc,94401,y,medium,"Exact, distinctive company name in the same metro area; the two addresses differ, so this rests on the name. Both in San Mateo."
+matched,2,high,0002020139,"Q Bio, Inc.","Q Bio, Inc.",94070,y,high,"Same street address (1411 Industrial Road, San Carlos); only the ZIP differs between the filings."
+matched,2,high,0000883241,SYNOPSYS INC,"Synopsys, Inc.",94043,y,high,Synopsys is a single well-known company with offices in Sunnyvale and Mountain View.
+matched,2,high,0001988121,Sampark Inc.,"Sampark, Inc.",94105,y,high,Web: Sampark Inc. is the San Francisco company behind Composio.
+matched,2,high,0002044460,"Tilt Five, Inc.","Tilt Five, Inc.",94539,y,medium,"Exact, distinctive company name in the same metro area; the two addresses differ, so this rests on the name. Both in Fremont."
+matched,2,high,0001951121,Union Credit Inc.,"Union Credit, Inc.",95404,y,high,Web: Union Credit is a fintech based in Santa Rosa.
+matched,2,high,0002105009,"Vasona Technologies, Inc.","Vasona Technologies, Inc.",95014,y,high,Web: HiringCafe's founder earlier built 'Vasona Hire'; the LCA trade name is HiringCafe.
+matched,2,high,0002007729,"Vidoso, Inc.",Vidoso Inc.,95054,y,medium,"Web confirms Vidoso at 1060 Ringwood Ave, Menlo Park (the Form D address). The Santa Clara LCA address could not be confirmed; rests on the unusual name."
+matched,2,high,0001900805,"uplift labs, inc.","Uplift Labs, Inc.",94306,y,high,Web: Uplift Labs is headquartered in Palo Alto.
+matched,3,medium,0002032488,"Alpha Design AI, Inc.","Alpha Design AI, Inc.",93117,y,medium,"Exact, distinctive name; trade name on the LCA is ChipAgents. Goleta address not confirmed on the web."
+matched,3,medium,0001943281,BoxPower Inc.,BoxPower Inc.,95945,y,high,Same street address on the Form D and the LCA. The Form D ZIP (94945) looks like a typo for 95945.
+matched,3,medium,0001943281,BoxPower Inc.,"BoxPower, Inc.",95945,y,high,Same street address on the Form D and the LCA. The Form D ZIP (94945) looks like a typo for 95945.
+matched,3,medium,0001944457,FlowFuse Inc.,FLOWFORGE INC,94120,y,high,Same street address (548 Market Street) and the LCA trade name is FlowFuse.
+matched,3,medium,0001974654,Harvey AI Corp,Counsel AI Corporation,90293,y,high,LCA trade name is 'Harvey AI'; Counsel AI Corporation is Harvey's legal entity.
+matched,3,medium,0001567664,"NATRON ENERGY, INC.",Natron Energy Inc.,95052,y,high,Same street address on the Form D and the LCA.
+matched,3,medium,0001983882,Numeral Two Inc.,"Numeral Two, Inc.",91723,y,medium,"Web: Numeral Two, Inc. is the San Francisco sales-tax startup Numeral. The Covina LCA address could not be confirmed; rests on the unusual name."
+matched,3,medium,0002149647,"Obsidian Security, Inc.","Obsidian Security, Inc.",92660,y,high,Obsidian Security is headquartered in Newport Beach with an office in Palo Alto.
+matched,3,medium,0001995133,"Persona AE, Inc.","Persona AE, Inc.",90272,y,low,"Exact, unusual name, but nothing found on the web for 'Persona AE'. Not verified."
+matched,3,medium,0001844768,Whatnot Inc.,Whatnot Inc.,90232,y,high,"Whatnot's main offices are in the Los Angeles area (Culver City, Marina del Rey)."
+matched,3,medium,0001844768,Whatnot Inc.,Whatnot Inc.,90292,y,high,"Whatnot's main offices are in the Los Angeles area (Culver City, Marina del Rey)."
+matched,3,medium,0001893252,X-Therma Inc.,X-Therma Inc,98406,y,high,Same name as trade name; Richmond CA is next to Hercules. The LCA ZIP (98406) looks like a typo.
+matched,4,medium,0002023832,"Escalante Bioscience, Inc.","Escalante Biosciences, Inc.",94107,y,high,Same street address (953 Indiana Street); the names differ by one letter (Bioscience / Biosciences).
+unmatched,,,0001995105,"Above Data, Inc.",,,y,medium,"No H-1B employer with a similar name anywhere in the LCA data, and none under another name at the same street address."
+unmatched,,,0001870952,"Ashbrook Technologies, Inc.",,,y,medium,"No H-1B employer with a similar name anywhere in the LCA data. The address is a shared building or mailbox, so the address check says nothing."
+unmatched,,,0002125497,Attuned Corp.,,,y,medium,"No H-1B employer with a similar name anywhere in the LCA data. The address is a shared building or mailbox, so the address check says nothing."
+unmatched,,,0002063071,Autonomy Bio Inc.,,,y,medium,"No H-1B employer with a similar name anywhere in the LCA data, and none under another name at the same street address."
+unmatched,,,0002092362,"Bloc Wines, Inc.",,,y,medium,"No H-1B employer with a similar name anywhere in the LCA data, and none under another name at the same street address."
+unmatched,,,0002042842,Bramo Inc.,,,y,medium,"No H-1B employer with a similar name anywhere in the LCA data. The address is a shared building or mailbox, so the address check says nothing."
+unmatched,,,0001772853,"Cashfree, Inc.",,,y,medium,"No H-1B employer with a similar name anywhere in the LCA data, and none under another name at the same street address."
+unmatched,,,0002082045,"Decade, Inc.",,,y,medium,"No H-1B employer with a similar name anywhere in the LCA data. The address is a shared building or mailbox, so the address check says nothing."
+unmatched,,,0002136541,Dynamic Creatures Inc.,"Dynamic Research, Inc.",90501,y,high,"The employer shown, Dynamic Research, Inc. of Torrance, is a different company."
+unmatched,,,0002094877,Empowering Change Public Benefit Corp INC,,,y,medium,"No H-1B employer with a similar name anywhere in the LCA data, and none under another name at the same street address."
+unmatched,,,0002052632,Euphonic AI Inc.,,,y,medium,"No H-1B employer with a similar name anywhere in the LCA data, and none under another name at the same street address."
+unmatched,,,0001980211,"Glazier Software, Inc.",,,y,medium,"No H-1B employer with a similar name anywhere in the LCA data, and none under another name at the same street address."
+unmatched,,,0002037449,Human Computer Game Corp,"Western Mesquite Mines, Inc.",92227,y,high,"The employer shown, Western Mesquite Mines, is a different company."
+unmatched,,,0002026465,"Intolerant Antibodies, Inc.",,,y,medium,"No H-1B employer with a similar name anywhere in the LCA data, and none under another name at the same street address."
+unmatched,,,0002082734,"MaiTRICS, Inc.",,,y,medium,"No H-1B employer with a similar name anywhere in the LCA data, and none under another name at the same street address."
+unmatched,,,0002093202,"Matcha Holdings, Inc.",,,y,low,One loose candidate: 'Bev Corp' (trade name Matcha AI) at a Delaware agent address. Could not tell whether it is the same company.
+unmatched,,,0002042159,"Outbuild Technologies, Inc.",,,y,medium,"No H-1B employer with a similar name anywhere in the LCA data. The address is a shared building or mailbox, so the address check says nothing."
+unmatched,,,0002017913,"Plutoshift AI, Inc.",,,y,medium,"No H-1B employer with a similar name anywhere in the LCA data, and none under another name at the same street address."
+unmatched,,,0001926833,"Serif Health Management, Inc.",,,y,medium,"No H-1B employer with a similar name anywhere in the LCA data. The address is a shared building or mailbox, so the address check says nothing."
+unmatched,,,0001668322,"Williams Learning Solutions, Inc.","WILLIAMS-SONOMA, INC.",94109,y,high,"The employer shown, Williams-Sonoma, is a different company."

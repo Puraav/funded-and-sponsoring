@@ -35,7 +35,14 @@ Output: `cik, company, employer_name, employer_zip5, tier`.
 - Commit `step 06: entity matching in dbt`
 
 ## Notes from build
-**Status: built up to the labelling step. Waiting for `data/match_sample.csv` to be labelled; `match_labels`, `mart_match_quality`, `fct_lca_events` and the precision test come after.**
+**Status: complete.**
+
+- **Who labelled the sample.** The user asked Claude to research and label it (2026-10-09). Each row in `data/match_sample.csv` has `correct`, a `confidence` (high / medium / low), the `evidence` used, and links to the SEC filings, a Google search and a LinkedIn search. `data/match_review.md` is the same thing as a readable table. Evidence was the street addresses on the two filings (same address on 30 of the 60 matched pairs) and web searches where the addresses differ.
+- **Result: 60 of 60 checked matches correct, 20 of 20 unmatched startups correctly left unmatched.** No rule was tightened or dropped.
+- **How far to trust that.** 44 matched labels are high confidence. 15 are medium: an exact, distinctive name in the same metro area with different addresses, which is close to what the matcher itself looks at, so those labels are less independent. 1 is low (Persona AE, Inc.: nothing found on the web). Rule 3 has 12 checked pairs and rule 4 has 1, so their precision is rough; `mart_match_quality.small_sample` flags every rule with fewer than 30 checked rows. Unmatched rows can only be checked against the LCA data itself (no employer with a similar name anywhere, none under another name at the same address).
+- `python -m fundsponsor.match_sample --to-seed` copies the labelled sample to `dbt/seeds/match_labels.csv`. Running the script without `--force` refuses to overwrite a sample that already has labels.
+- `mart_match_quality` has one `overall` row, one row per rule, and one `unmatched` row. The precision column is `match_precision`.
+- The precision test also fails if a rule in use has no checked rows at all.
 
 - `normalise_name` removes legal suffixes **only at the end of the name** (repeatedly), not anywhere in it, so "The Browser Company of New York, Inc." keeps "company". It also drops a trailing SEC state tag (`/DE/`, `\DE`), turns `&` into "and", and removes dots and apostrophes without leaving a space (`L.L.C.` → `llc`, `Luke's` → `lukes`). Tested on 16 cases in the `name_cases` seed.
 - Two helper models were added: `int_match_candidates` (every pair with the strictest rule it passes) feeds both `int_matches` and `int_match_conflicts`.
