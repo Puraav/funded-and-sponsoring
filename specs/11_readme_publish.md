@@ -29,3 +29,13 @@ Claude Code prepares `web/` so Vercel needs no settings beyond Root Directory = 
 ## Done when
 - Public repo and live site both load logged out
 - Commit `step 11: README, publish, deploy`
+
+## Notes from build
+- **The repo already existed.** The user created `Puraav/funded-and-sponsoring` (public) on GitHub, so `gh repo create` was not run; `main` is pushed over SSH.
+- **Description, topics and the Website field are not set yet.** The `gh` CLI is not logged in on this machine, and those need the GitHub API. After `gh auth login`:
+  `gh repo edit Puraav/funded-and-sponsoring --description "Which Bay Area startups that raise money go on to file for H-1B workers? SEC Form D × DOL LCA data in DuckDB + dbt, with a weekly radar of recently funded sponsors." --add-topic h1b,international-students,startups,venture-capital,sec-edgar,dbt,duckdb,nextjs,entity-resolution,open-data`
+- **Not deployed yet.** Vercel needs the user's account: Add New Project → import the repo → Root Directory `web` → Deploy. Until then the README says "not deployed yet" and `web/lib/site.ts` defaults to `https://funded-and-sponsoring.vercel.app`. Once the real URL is known, set it in `web/lib/site.ts`, the README and the repo Website field.
+- **The radar Action needs a repo secret** `SEC_USER_AGENT` ("Name email"), under Settings → Secrets and variables → Actions.
+- **README numbers are generated.** Two blocks are written by `python -m fundsponsor.findings`: `FINDINGS` (the seven findings, the match-quality line and coverage) and `STATS` (dbt project size and the per-rule match table). `tests/test_readme.py` asserts both blocks equal what `data/findings.json` produces, and that the site's `findings.json` carries the same findings.
+- "Why I built this" is left as the `PURAAV` comment for the user to write.
+- Final checks on 2026-10-09: `ruff check .` clean; `pytest -q` 60 passed; `dbt build` on real data 197 steps passed; `npm run lint` and `npm run build` clean (509 pages); Playwright 5 passed; Lighthouse on `/` 98 performance, 100 accessibility. Nothing from `data/raw/` or the DuckDB file is tracked; the repository is about 8 MB.

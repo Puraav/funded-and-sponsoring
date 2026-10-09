@@ -74,6 +74,6 @@ data/raw/ (gitignored)  data/warehouse.duckdb (gitignored)  charts/
 - `python -m fundsponsor.fetch_formd` · `python -m fundsponsor.fetch_lca` · `python -m fundsponsor.make_seeds`
 - `cd dbt && dbt deps && dbt seed && dbt build` · `dbt docs generate`
 - `python -m fundsponsor.findings` · `python -m fundsponsor.charts` · `python -m fundsponsor.export_site`
-- `python -m fundsponsor.fetch_edgar_recent --days 30 && cd dbt && dbt build --select +radar`
+- `python -m fundsponsor.export_seed_cache` (after a full `dbt build`) · `python -m fundsponsor.fetch_edgar_recent --days 30 && cd dbt && dbt build --select +radar --indirect-selection=cautious` · `python -m fundsponsor.export_radar`
 - `cd web && npm run dev` · `npm run build` · `npx playwright test`
 - `pytest -q` · `ruff check .`
