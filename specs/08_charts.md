@@ -14,3 +14,11 @@ Style: 1600×1000 px, 200 dpi, white background. Title = the finding with its nu
 ## Done when
 - All PNGs in `charts/`; open each and check nothing overlaps or is cut off
 - Commit `step 08: charts`
+
+## Notes from build
+- Every title is built from the mart numbers at draw time, so it cannot drift from the data.
+- Chart 5 is a real histogram in equal 30-day steps, drawn from `fct_raises.days_to_first_lca`. The `mart_time_to_lca` buckets are uneven (30 and 90 days wide) and would mislead as bars; the mart still supplies the median, quartile and n.
+- Chart 4 is one bar split in two (45% / 55%) rather than a pie.
+- Chart 6 shows matched pairs per rule with the checked-sample result written on each bar.
+- Accent colour `#2a78d6`, everything else grey; text is always dark ink, never the accent.
+- Each PNG was opened and checked: no overlapping or cut-off labels.
