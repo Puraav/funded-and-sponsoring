@@ -18,6 +18,10 @@ models:
                 values: ["D", "D/A"]
       - name: test_or_live
         description: "`LIVE` for real filings."
+      - name: sic_code
+        description: >
+          SEC industry code of the issuer. Only companies registered with the SEC (in practice,
+          publicly listed ones) have one; it is blank for private companies.
       - name: source_quarter
         description: The quarterly data set the row came from, e.g. `2024q1`.
 

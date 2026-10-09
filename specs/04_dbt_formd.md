@@ -45,3 +45,4 @@
 - `raw_dir` cannot use `env_var()` inside `dbt_project.yml` (vars are not rendered), so the source location reads `env_var('FS_DATA_DIR', var('raw_dir'))` directly.
 - `dbt/profiles.yml` reads `FS_WAREHOUSE` so tests build into a throwaway DuckDB file rather than the real warehouse.
 - CI coverage is a pytest (`tests/test_dbt_fixture.py`) that runs `dbt build` on `tests/fixtures/raw` and asserts exactly which fixture filings survive.
+- **Later change (spec 07):** listed companies and two hand-listed firms are now excluded too, which brings the set to 2,064 raises by 1,614 startups. See the notes in spec 07.

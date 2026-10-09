@@ -12,6 +12,7 @@ with originals as (
         offerings.industry_group as industry,
         issuers.entity_type,
         offerings.is_business_combination,
+        submissions.sic_code,
         submissions.filing_date,
         offerings.first_sale_date,
         offerings.amount_sold,
@@ -66,3 +67,7 @@ where originals.filing_date >= date '2023-10-01'
     and not (
         originals.entity_type = 'Limited Liability Company' and originals.industry = 'Other'
     )
+    -- a company with an SEC industry code is an SEC registrant, in practice a listed company
+    -- selling shares privately (Intel, Synopsys), not a startup
+    and originals.sic_code is null
+    and originals.cik not in (select cik from {{ ref('not_startups') }})

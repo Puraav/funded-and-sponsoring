@@ -61,3 +61,5 @@ Output: `cik, company, employer_name, employer_zip5, tier`.
 - No conflicts on real data (`int_match_conflicts` is empty).
 - Known misses, by design: 17 startups whose only same-name employer is outside California (e.g. ConductorOne in Oregon, AtScale in Massachusetts), and 9 startups with short names blocked by the generic rule because the employer is in a different Bay Area ZIP (e.g. AiFi, Lilt, Vooma).
 - The sample has 80 rows: 24 from rule 1, 23 from rule 2, all 12 from rule 3, the 1 from rule 4, and 20 unmatched startups. Unmatched rows show the closest-named California employer that shares the startup's first word, when there is one, so a missed match can be seen.
+- **Later change (spec 07):** after listed companies were removed from the startup set, the match figures are 504 of 1,614 startups (31.2
+- **Later change (spec 07):** after listed companies were removed from the startup set, the match figures are 504 of 1,614 startups (31.2%), 727 pairs. The checked sample was drawn before that change; 3 of its 80 rows are companies no longer in the set, and their labels still count towards the precision of the rules.

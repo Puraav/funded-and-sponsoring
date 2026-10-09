@@ -109,3 +109,246 @@ models:
       - name: annual_wage
       - name: is_new_hire
       - name: total_worker_positions
+
+  - name: fct_raises
+    description: >
+      One row per startup raise with the same company's H-1B filings around it. "Before" is the
+      24 months up to the Form D filing date; "after" is the filing date and the 12 months
+      that follow. The LCA data starts in October 2022, so for raises in late 2023 the
+      "before" window is really 12 to 24 months long.
+    columns:
+      - name: accession
+        tests: [unique, not_null]
+      - name: cik
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_company')
+                field: cik
+      - name: company
+      - name: city
+      - name: county_name
+      - name: industry
+      - name: filing_date
+      - name: first_sale_date
+      - name: amount_sold
+      - name: amount_offered
+      - name: round_bin
+      - name: is_first_raise
+      - name: prior_24m
+        description: Certified H-1B LCAs by the company in the 24 months before the filing date.
+      - name: after_12m
+        description: Certified H-1B LCAs on the filing date or in the 12 months after it.
+      - name: after_12m_new_hire
+        description: Those of `after_12m` that are for a new hire rather than an extension.
+      - name: sponsored_after
+        description: True when `after_12m` is at least 1.
+        tests: [not_null]
+      - name: sponsored_after_new_hire
+      - name: after_software
+      - name: after_data
+      - name: after_product
+      - name: after_other_tech
+      - name: after_non_tech
+      - name: median_wage_after
+        description: Median annual wage across the `after_12m` filings.
+      - name: first_lca_after
+      - name: days_to_first_lca
+        description: Days from the Form D filing to the first H-1B filing after it.
+      - name: has_full_followup
+        description: >
+          True when the raise was filed at least 365 days before the last date in the LCA data,
+          so a full year can be observed. Only these raises count in "after" rates.
+        tests: [not_null]
+
+  - name: mart_sponsor_rate
+    description: >
+      Headline rate: of raises with a full year of follow-up, the share followed by at least
+      one H-1B filing (`any`) or one new-hire H-1B filing (`new_hire`). A startup that could
+      not be matched to an employer counts as not filing, so the rates are a floor.
+    columns:
+      - name: metric
+        tests: [unique, not_null]
+      - name: metric_label
+      - name: n
+        description: Raises with a full year of follow-up.
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "> 0"
+      - name: sponsored
+      - name: sponsor_rate
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 1
+      - name: small_sample
+        description: True when `n` is under 30; treat the rate as rough.
+
+  - name: mart_by_round
+    description: Sponsor rate by size of raise, and the median number of H-1B filings among raises that were followed by any.
+    columns:
+      - name: round_bin
+        tests: [unique, not_null]
+      - name: round_order
+        description: Sort order from smallest to largest raise; `unknown` last.
+      - name: n
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "> 0"
+      - name: sponsored
+      - name: sponsor_rate
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 1
+      - name: median_lcas_per_sponsor
+      - name: small_sample
+        description: True when `n` is under 30; treat the rate as rough.
+
+  - name: mart_by_history
+    description: Sponsor rate after a raise, split by whether the company filed for H-1B workers in the 24 months before it.
+    columns:
+      - name: history
+        tests:
+          - unique
+          - accepted_values:
+              arguments:
+                values: [sponsored_before, no_prior]
+      - name: history_label
+      - name: n
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "> 0"
+      - name: sponsored
+      - name: sponsor_rate
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 1
+      - name: small_sample
+        description: True when `n` is under 30; treat the rate as rough.
+
+  - name: mart_by_industry
+    description: Sponsor rate for the eight Form D industry groups with the most raises.
+    columns:
+      - name: industry
+        tests: [unique, not_null]
+      - name: n
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "> 0"
+      - name: sponsored
+      - name: sponsor_rate
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 1
+      - name: small_sample
+        description: True when `n` is under 30; treat the rate as rough.
+
+  - name: mart_roles_wages
+    description: >
+      H-1B filings in the 12 months after a raise, by role group and prevailing wage level.
+      Rows with `wage_level = 'All'` are role-group totals and carry `share_of_lcas`.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [role_group, wage_level]
+    columns:
+      - name: role_group
+      - name: wage_level
+        description: I, II, III, IV, or All.
+      - name: n
+        description: Number of H-1B filings.
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "> 0"
+      - name: share_of_lcas
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 1
+      - name: median_wage
+        description: Median annual wage in US dollars.
+      - name: small_sample
+        description: True when `n` is under 30; treat the rate as rough.
+
+  - name: mart_entry_level
+    description: >
+      Of the startups that filed after raising, the share with at least one early-career tech
+      filing: a Software, Data or Product role at prevailing wage Level I or II.
+    columns:
+      - name: n
+        description: Startups with at least one H-1B filing in the year after a raise.
+      - name: with_entry_level
+      - name: entry_level_share
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 1
+      - name: small_sample
+        description: True when `n` is under 30; treat the rate as rough.
+
+  - name: mart_time_to_lca
+    description: >
+      Days from a Form D filing to the company's first H-1B filing after it, for raises that
+      were followed by one within 12 months. One row per histogram bucket; `n` and the
+      quartiles repeat on each row.
+    columns:
+      - name: bucket_order
+        tests: [unique, not_null]
+      - name: bucket
+      - name: low_days
+      - name: high_days
+      - name: raises
+      - name: share
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 1
+      - name: n
+      - name: median_days
+      - name: p25_days
+      - name: p75_days
+      - name: small_sample
+        description: True when `n` is under 30; treat the rate as rough.
+
+  - name: mart_market_share
+    description: The startups' share of Bay Area H-1B sponsorship, by distinct employer and by number of filings.
+    columns:
+      - name: n
+        description: Distinct Bay Area employers with a certified H-1B LCA (by normalised name).
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "> 0"
+      - name: startup_employers
+      - name: employer_share
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 1
+      - name: lcas
+      - name: startup_lcas
+      - name: lca_share
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 1
+      - name: small_sample
+        description: True when `n` is under 30; treat the rate as rough.

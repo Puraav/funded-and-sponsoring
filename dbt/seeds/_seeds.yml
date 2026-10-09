@@ -126,3 +126,16 @@ seeds:
         description: How strong the evidence behind the label is (high, medium, low).
       - name: evidence
         description: What the label is based on.
+
+  - name: not_startups
+    description: >
+      Hand-kept list of long-established private firms that file Form D (for employee share
+      sales) and pass every automatic filter, but are plainly not startups. Kept short and
+      public so the exclusion can be checked.
+    config:
+      column_types: {cik: varchar, company: varchar, reason: varchar}
+    columns:
+      - name: cik
+        tests: [unique, not_null]
+      - name: reason
+        tests: [not_null]

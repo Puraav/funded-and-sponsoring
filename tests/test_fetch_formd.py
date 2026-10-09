@@ -12,7 +12,8 @@ ZIPS = sorted((Path(__file__).parent / "fixtures" / "formd_zips").glob("*.zip"))
 
 
 def test_fixture_zips_exist():
-    assert [z.name for z in ZIPS] == ["2023q3_d.zip", "2023q4_d.zip", "2024q1_d.zip"]
+    quarters = [z.name.split("_")[0] for z in ZIPS]
+    assert quarters == ["2023q3", "2023q4", "2024q1", "2025q1"]
 
 
 def test_run_writes_one_parquet_per_table(tmp_path):
@@ -23,11 +24,11 @@ def test_run_writes_one_parquet_per_table(tmp_path):
         assert (tmp_path / f"{table.lower()}.parquet").exists()
 
     submissions = pd.read_parquet(tmp_path / "formdsubmission.parquet")
-    assert len(submissions) == 13
-    assert set(submissions["quarter"]) == {"2023q3", "2023q4", "2024q1"}
+    assert len(submissions) == 15
+    assert set(submissions["quarter"]) == {"2023q3", "2023q4", "2024q1", "2025q1"}
     assert submissions["ACCESSIONNUMBER"].is_unique
-    # 13 primary issuers plus one extra non-primary issuer
-    assert len(tables["ISSUERS"]) == 14
+    # 15 primary issuers plus one extra non-primary issuer
+    assert len(tables["ISSUERS"]) == 16
 
 
 def test_dates_parse_from_both_sec_formats(tmp_path):

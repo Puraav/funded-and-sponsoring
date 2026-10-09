@@ -29,3 +29,19 @@ Join raises to `fct_lca_events` on `cik`:
 - `dbt build` green; findings printed with every n
 - `dbt docs generate` works; save a lineage graph screenshot to `docs/lineage.png`
 - Commit `step 07: marts and findings`
+
+## Notes from build
+- **Listed companies had to go.** The first run counted Intel (1,927 H-1B filings in a year), Synopsys and about 80 other listed companies as "startups", because listed companies file Form D for private placements. `int_bay_area_raises` now drops any filing whose issuer has an SEC industry (SIC) code: only SEC registrants have one, and it is as of the filing quarter, so a company that listed later (Figma) is still counted for the raise it made while private. This removed 146 raises by 80 companies.
+- **`not_startups` seed.** Two long-established private firms that file Form D for employee share sales pass every automatic filter and are excluded by hand: DPR Construction and Gensler. They were spotted because of their large H-1B counts, so removing them lowers the rates very slightly; the list is public and has a reason per row.
+- After both changes: **2,064 raises by 1,614 startups**; 504 startups (31%) matched; 6,102 Bay Area H-1B filings.
+- The "after" window is the filing date plus 12 months, inclusive. "Before" is the 24 months up to the day before filing.
+- **The "before" window is short for early raises.** LCA data starts in October 2022, so a raise filed in October 2023 has 12 months of history, not 24. Raises from October 2024 on have the full 24.
+- **The rates are a floor.** A startup that sponsors under a name the matcher cannot link counts as not filing.
+- A company that raises twice is two rows in `fct_raises`. Role and wage figures use `int_post_raise_lcas`, where each H-1B filing is counted once even if two raises precede it.
+- `mart_sponsor_rate` has two rows (`any`, `new_hire`). `mart_roles_wages` has role-group totals as `wage_level = 'All'`. `mart_time_to_lca` is one row per bucket with the median and quartiles repeated.
+- `mart_market_share` counts distinct Bay Area employers by normalised name, and also reports the share of filings.
+- The known-rates check is a pytest (`tests/test_dbt_fixture.py::test_known_rates`) rather than a dbt singular test, because a dbt test with hard-coded fixture values would fail on the real data. The fixture rates were worked out by hand.
+- `findings.py` leaves a finding out when its mart rows are missing (for example no $50M+ raises) instead of printing a blank.
+- `docs/lineage.png` is a real screenshot of the dbt docs graph, taken by `web/scripts/lineage-screenshot.mjs` (Playwright).
+- Real findings on 2026-10-09: 24% of raises followed by an H-1B filing within a year (n = 1,230); 60% for $50M+ (n = 109) against 6.1% under $2M (n = 328); 64% for startups that had filed before (n = 259) against 13% (n = 971); software is 52% of post-raise filings at a median $179,982; 45% of filing startups filed for an early-career tech role (n = 240); median 98 days to first filing (n = 292); startups are 4.6% of Bay Area H-1B employers and 2.1% of filings.
+- dbt project size: 24 models, 9 seeds, 159 build steps including tests.

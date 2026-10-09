@@ -272,6 +272,42 @@ FILINGS = [
         sold="3000000",
         note="kept: generic name, so it may only match an employer in the same ZIP",
     ),
+    dict(
+        q="2024Q1",
+        acc="0009000011-24-000001",
+        cik="0009000011",
+        name="Corvane Semiconductor Corp",
+        street="1100 Fixture Pkwy",
+        city="Santa Clara",
+        state="CA",
+        zip="95054",
+        filed="14-FEB-2024",
+        type="D",
+        industry="Other Technology",
+        sale="2024-02-10",
+        offered="40000000",
+        sold="40000000",
+        sic="3674",
+        note="dropped: has an SEC industry code, so it is a listed company",
+    ),
+    # 2025 Q1: too recent to have a full year of LCA data after it
+    dict(
+        q="2025Q1",
+        acc="0009000004-25-000002",
+        cik="0009000004",
+        name="Marrowgate Health Corp",
+        street="400 Fixture Blvd",
+        city="Palo Alto",
+        state="CA",
+        zip="94301",
+        filed="15-JAN-2025",
+        type="D",
+        industry="Biotechnology",
+        sale="2025-01-10",
+        offered="60000000",
+        sold="60000000",
+        note="kept, but without full follow-up it is left out of every rate",
+    ),
 ]
 
 
@@ -370,6 +406,16 @@ EMPLOYERS = {
         "541715",
     ),  # rule 4: one letter off, same 3-digit ZIP
     "nova_la": ("Nova Inc", "", "1 Venice Way", "Los Angeles", "CA", "90291", "541511"),
+    # A Bay Area office of the big employer: a Bay Area sponsor that is not a startup
+    "bigco_sf": (
+        "Ferrowmont Systems LLC",
+        "",
+        "2 Fixture Plaza",
+        "San Francisco",
+        "CA",
+        "94105",
+        "541512",
+    ),
 }
 
 
@@ -722,6 +768,19 @@ LCA_FILES = {
             level="II",
         ),
     ],
+    # The latest LCA sets how far the data reaches: raises up to a year before it can be judged
+    ("LCA_Disclosure_Data_FY2025_Q3.xlsx", 2025, 3): [
+        _lca(
+            "I-200-25100-000027",
+            "bigco_sf",
+            "2025-04-10",
+            "Systems Analyst",
+            "15-1211.00",
+            "Computer Systems Analysts",
+            104000,
+            level="II",
+        ),
+    ],
 }
 
 
@@ -758,6 +817,7 @@ def formd_tables(quarter: str) -> dict[str, str]:
             FILE_NUM="021-000000",
             FILING_DATE=f["filed"],
             SCHEMAVERSION="X0708",
+            SIC_CODE=f.get("sic", ""),
             SUBMISSIONTYPE=f["type"],
             TESTORLIVE="LIVE",
         )

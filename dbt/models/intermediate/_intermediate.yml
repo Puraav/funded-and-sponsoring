@@ -7,7 +7,9 @@ models:
       2023-10-01 by a primary issuer whose ZIP is in the nine Bay Area counties, whose industry
       group is not a fund, finance or real estate, and whose name does not look like a fund or SPV.
       Also dropped: business-combination filings (mergers, buyouts), limited partnerships, and
-      LLCs filing under the catch-all "Other" industry (nearly all SPVs and property deals).
+      LLCs filing under the catch-all "Other" industry (nearly all SPVs and property deals),
+      companies registered with the SEC at the time of filing (listed companies), and the few
+      long-established firms listed in the `not_startups` seed.
     columns:
       - name: accession
         description: SEC accession number of the Form D.
@@ -194,3 +196,18 @@ models:
           - accepted_values:
               arguments:
                 values: [high, medium]
+
+  - name: int_post_raise_lcas
+    description: >
+      H-1B filings made within 12 months after a raise by the same company. Each filing appears
+      once even when two raises of that company both precede it.
+    columns:
+      - name: case_number
+        tests: [unique, not_null]
+      - name: cik
+      - name: event_date
+      - name: role_group
+      - name: pw_wage_level
+      - name: annual_wage
+      - name: is_new_hire
+      - name: job_title
