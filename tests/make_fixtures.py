@@ -802,6 +802,130 @@ def write_lca_xlsx(dest: Path) -> list[tuple[Path, int, int]]:
     return written
 
 
+FORM_D_XML = """<?xml version="1.0"?>
+<edgarSubmission>
+    <schemaVersion>X0708</schemaVersion>
+    <submissionType>{type}</submissionType>
+    <testOrLive>LIVE</testOrLive>
+    <primaryIssuer>
+        <cik>{cik}</cik>
+        <entityName>{name}</entityName>
+        <issuerAddress>
+            <street1>{street}</street1>
+            <city>{city}</city>
+            <stateOrCountry>{state}</stateOrCountry>
+            <stateOrCountryDescription>CALIFORNIA</stateOrCountryDescription>
+            <zipCode>{zip}</zipCode>
+        </issuerAddress>
+        <issuerPhoneNumber>555-0100</issuerPhoneNumber>
+        <jurisdictionOfInc>DELAWARE</jurisdictionOfInc>
+        <entityType>{entity}</entityType>
+        <yearOfInc><withinFiveYears>true</withinFiveYears><value>2022</value></yearOfInc>
+    </primaryIssuer>
+    <relatedPersonsList>
+        <relatedPersonInfo>
+            <relatedPersonName><firstName>Fixture</firstName><lastName>Founder</lastName></relatedPersonName>
+            <relatedPersonAddress><street1>1 Private Rd</street1><city>{city}</city></relatedPersonAddress>
+            <relatedPersonRelationshipList>
+                <relationship>Executive Officer</relationship>
+                <relationship>Director</relationship>
+            </relatedPersonRelationshipList>
+        </relatedPersonInfo>
+        <relatedPersonInfo>
+            <relatedPersonName><firstName>Fixture</firstName><lastName>Investor</lastName></relatedPersonName>
+            <relatedPersonRelationshipList><relationship>Director</relationship></relatedPersonRelationshipList>
+        </relatedPersonInfo>
+    </relatedPersonsList>
+    <offeringData>
+        <industryGroup><industryGroupType>{industry}</industryGroupType></industryGroup>
+        <typeOfFiling>
+            <newOrAmendment><isAmendment>false</isAmendment></newOrAmendment>
+            <dateOfFirstSale><value>{sale}</value></dateOfFirstSale>
+        </typeOfFiling>
+        <businessCombinationTransaction>
+            <isBusinessCombinationTransaction>false</isBusinessCombinationTransaction>
+        </businessCombinationTransaction>
+        <offeringSalesAmounts>
+            <totalOfferingAmount>{offered}</totalOfferingAmount>
+            <totalAmountSold>{sold}</totalAmountSold>
+            <totalRemaining>0</totalRemaining>
+        </offeringSalesAmounts>
+    </offeringData>
+</edgarSubmission>
+"""
+
+# Recent Form D filings as EDGAR serves them (primary_doc.xml). All invented.
+RECENT_FILINGS = [
+    dict(
+        acc="0009000001-24-000009",
+        filed="2024-06-10",
+        type="D",
+        cik="0009000001",
+        name="Quillfern Robotics, Inc.",
+        street="100 Fixture St",
+        city="San Francisco",
+        state="CA",
+        zip="94107",
+        entity="Corporation",
+        industry="Other Technology",
+        sale="2024-06-01",
+        offered="12000000",
+        sold="12000000",
+    ),  # sponsor with history
+    dict(
+        acc="0009000012-24-000001",
+        filed="2024-06-11",
+        type="D",
+        cik="0009000012",
+        name="Tessel Harbor Fund II, L.P.",
+        street="200 Fixture St",
+        city="Menlo Park",
+        state="CA",
+        zip="94025",
+        entity="Limited Partnership",
+        industry="Pooled Investment Fund",
+        sale="2024-06-05",
+        offered="Indefinite",
+        sold="9000000",
+    ),  # a fund: never on the radar
+    dict(
+        acc="0009000013-24-000001",
+        filed="2024-06-12",
+        type="D",
+        cik="0009000013",
+        name="Hollowbrook Labs, Inc.",
+        street="300 Fixture Ave",
+        city="Oakland",
+        state="CA",
+        zip="94612",
+        entity="Corporation",
+        industry="Other Technology",
+        sale="2024-06-08",
+        offered="1000000",
+        sold="1000000",
+    ),  # no H-1B history
+]
+
+
+def write_recent(xml_dir: Path, parquet: Path) -> None:
+    """Write the primary_doc.xml fixtures and the parquet file fetch_edgar_recent would make."""
+    from datetime import date
+
+    from fundsponsor import fetch_edgar_recent
+
+    xml_dir.mkdir(parents=True, exist_ok=True)
+    records = []
+    for filing in RECENT_FILINGS:
+        path = xml_dir / f"{filing['acc']}.xml"
+        path.write_text(FORM_D_XML.format(**filing))
+        records.append(
+            fetch_edgar_recent.parse_form_d(
+                path.read_bytes(), filing["acc"], date.fromisoformat(filing["filed"])
+            )
+        )
+    fetch_edgar_recent.write_parquet(records, parquet)
+
+
 def _tsv(columns: list[str], rows: list[dict]) -> str:
     lines = ["\t".join(columns)]
     lines += ["\t".join(str(row.get(col, "")) for col in columns) for row in rows]
@@ -917,7 +1041,15 @@ def main() -> None:
     with tempfile.TemporaryDirectory() as scratch:
         jobs = [(x, Path(scratch) / f"{x.stem}.parquet", fy, q) for x, fy, q in files]
         fetch_lca.run(jobs, raw / "lca" / "lca_all.parquet")
+    write_recent(FIXTURES / "edgar", raw / "formd_recent.parquet")
     print(f"wrote {raw.relative_to(FIXTURES.parent.parent)}/")
+
+    # The radar's extracts, committed so CI can run a plain `dbt build` on the fixtures.
+    from dbt_helpers import build_fixture_warehouse
+
+    with tempfile.TemporaryDirectory() as scratch:
+        build_fixture_warehouse(Path(scratch) / "fixture.duckdb", FIXTURES / "seed_cache")
+    print(f"wrote {(FIXTURES / 'seed_cache').relative_to(FIXTURES.parent.parent)}/")
 
 
 if __name__ == "__main__":

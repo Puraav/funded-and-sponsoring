@@ -14,6 +14,8 @@ vars:
   # Raw parquet folder. The env var FS_DATA_DIR overrides it (CI and tests use fixtures);
   # see models/staging/_sources.yml.
   raw_dir: "../data/raw"
+  # Committed extracts used by the radar models. Env var FS_SEED_CACHE overrides it.
+  seed_cache_dir: "../data/seed_cache"
 
 models:
   fundsponsor:
@@ -23,3 +25,6 @@ models:
       +materialized: table
     marts:
       +materialized: table
+    radar:
+      +materialized: table
+      +tags: ["radar"]

@@ -17,6 +17,7 @@ from . import config
 FINDINGS_JSON = config.DATA_DIR / "findings.json"
 README = config.ROOT / "README.md"
 START, END = "<!-- FINDINGS:START -->", "<!-- FINDINGS:END -->"
+STATS_START, STATS_END = "<!-- STATS:START -->", "<!-- STATS:END -->"
 
 
 def pct(value: float) -> str:
@@ -260,6 +261,44 @@ def build(warehouse: duckdb.DuckDBPyConnection) -> dict:
     }
 
 
+def project_stats() -> dict:
+    """Size of the dbt project, counted from its files and the last compiled manifest."""
+    dbt_dir = config.ROOT / "dbt"
+    stats = {
+        "dbt_models": len(list((dbt_dir / "models").rglob("*.sql"))),
+        "dbt_seeds": len(list((dbt_dir / "seeds").glob("*.csv"))),
+    }
+    manifest = dbt_dir / "target" / "manifest.json"
+    if manifest.exists():
+        nodes = json.loads(manifest.read_text())["nodes"].values()
+        stats["dbt_tests"] = sum(
+            1
+            for node in nodes
+            if node["resource_type"] == "test" and node["package_name"] == "fundsponsor"
+        )
+    return stats
+
+
+def stats_block(document: dict) -> str:
+    """The README's generated lines about project size and match quality by rule."""
+    project = document.get("project", {})
+    quality = document["match_quality"]
+    tests = f" and {project['dbt_tests']} dbt tests" if "dbt_tests" in project else ""
+    lines = [
+        f"The dbt project has {project.get('dbt_models', 0)} models, "
+        f"{project.get('dbt_seeds', 0)} seeds{tests}.",
+        "",
+        "| Matching rule | Confidence | Matched pairs | Checked | Correct |",
+        "|---|---|---|---|---|",
+    ]
+    lines += [
+        f"| {rule['name']} | {rule['tier']} | {rule['pairs']:,} | {rule['labelled']} | "
+        f"{rule['labelled_correct']} |"
+        for rule in quality["by_rule"]
+    ]
+    return "\n".join(lines)
+
+
 def readme_block(document: dict) -> str:
     cover = document["coverage"]
     lines = [f"{i}. {finding['text']}" for i, finding in enumerate(document["findings"], 1)]
@@ -277,19 +316,26 @@ def readme_block(document: dict) -> str:
 
 
 def write_readme(document: dict, readme: Path = README) -> None:
-    """Replace the text between the FINDINGS markers; add the markers if they are missing."""
+    """Replace the text between the FINDINGS markers (added if missing) and, where the
+    README has them, between the STATS markers."""
     block = f"{START}\n{readme_block(document)}\n{END}"
     text = readme.read_text() if readme.exists() else ""
     if START in text and END in text:
         text = re.sub(f"{re.escape(START)}.*?{re.escape(END)}", lambda _: block, text, flags=re.S)
     else:
         text = text.rstrip() + f"\n\n## Headline findings\n\n{block}\n"
+    if STATS_START in text and STATS_END in text:
+        stats = f"{STATS_START}\n{stats_block(document)}\n{STATS_END}"
+        text = re.sub(
+            f"{re.escape(STATS_START)}.*?{re.escape(STATS_END)}", lambda _: stats, text, flags=re.S
+        )
     readme.write_text(text)
 
 
 def main() -> None:
     with duckdb.connect(str(config.WAREHOUSE), read_only=True) as warehouse:
         document = build(warehouse)
+    document["project"] = project_stats()
     FINDINGS_JSON.write_text(json.dumps(document, indent=2, default=float) + "\n")
     write_readme(document)
     for i, finding in enumerate(document["findings"], 1):

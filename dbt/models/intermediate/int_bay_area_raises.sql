@@ -57,17 +57,7 @@ from originals
 inner join {{ ref('bay_area_zips') }} as zips
     on originals.zip5 = zips.zip
 where originals.filing_date >= date '2023-10-01'
-    and originals.industry not in (select industry_group from {{ ref('excluded_industry_groups') }})
-    and not {{ is_fund_name('originals.company') }}
-    -- mergers and buyouts are filed on Form D too, but they are not fundraises
-    and not originals.is_business_combination
-    -- venture-backed startups are corporations; partnerships are funds, and an LLC that
-    -- files under the catch-all "Other" industry is nearly always an SPV or a property deal
-    and originals.entity_type is distinct from 'Limited Partnership'
-    and not (
-        originals.entity_type = 'Limited Liability Company' and originals.industry = 'Other'
-    )
+    and {{ startup_filters('originals') }}
     -- a company with an SEC industry code is an SEC registrant, in practice a listed company
     -- selling shares privately (Intel, Synopsys), not a startup
     and originals.sic_code is null
-    and originals.cik not in (select cik from {{ ref('not_startups') }})

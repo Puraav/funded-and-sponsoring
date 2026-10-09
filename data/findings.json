@@ -196,5 +196,10 @@
         "small_sample": true
       }
     ]
+  },
+  "project": {
+    "dbt_models": 34,
+    "dbt_seeds": 9,
+    "dbt_tests": 154
   }
 }

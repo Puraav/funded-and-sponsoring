@@ -1,0 +1,112 @@
+version: 2
+
+models:
+  - name: stg_formd_recent
+    description: Recent Form D filings read from EDGAR, cleaned and typed. Originals and amendments.
+    columns:
+      - name: accession_number
+        tests: [unique, not_null]
+      - name: filing_date
+        tests: [not_null]
+      - name: submission_type
+      - name: cik
+        tests: [not_null]
+      - name: entity_name
+      - name: street1
+      - name: city
+      - name: state
+      - name: zip5
+      - name: entity_type
+      - name: industry_group
+      - name: is_business_combination
+      - name: first_sale_date
+      - name: amount_offered
+      - name: amount_sold
+      - name: officers
+        description: Names of the executive officers on the form, separated by semicolons.
+
+  - name: int_recent_raises
+    description: >
+      Recent original Form D filings from Bay Area startups: the same rules as
+      `int_bay_area_raises` (shared through the `startup_filters` macro), with listed companies
+      removed using the `listed_ciks` extract.
+    columns:
+      - name: accession
+        tests: [unique, not_null]
+      - name: cik
+        tests: [not_null]
+      - name: company
+      - name: street
+      - name: city
+      - name: zip5
+      - name: county_name
+      - name: industry
+      - name: filing_date
+      - name: first_sale_date
+      - name: amount_sold
+      - name: amount_offered
+      - name: round_bin
+        tests:
+          - accepted_values:
+              arguments:
+                values: ["<$2M", "$2–10M", "$10–50M", "$50M+", "unknown"]
+      - name: officers
+
+  - name: int_recent_matches
+    description: >
+      Recent startups matched to California H-1B employers by exact normalised name: same ZIP
+      (rule 1), Bay Area (rule 2) or elsewhere in California (rule 3). Generic names only match
+      in the same ZIP. An employer that fits two startups equally is dropped.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [employer_name, employer_zip5]
+    columns:
+      - name: cik
+      - name: employer_name
+      - name: employer_zip5
+      - name: match_rule
+        tests:
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3]
+                quote: false
+
+  - name: radar
+    description: >
+      Recently funded Bay Area startups ranked by a 0 to 100 score. 40 points for certified
+      H-1B LCAs in the 24 months before the raise (log scale, full marks at 50 filings); 25
+      points if any were for software, data or product roles; 15 points if any were at
+      prevailing wage Level I or II; up to 20 points for the amount raised (<$2M 5, $2-10M 10,
+      $10-50M 15, $50M+ 20). A high score means the company sponsored recently and just raised
+      money, not that it has open roles.
+    columns:
+      - name: rank
+        tests: [unique, not_null]
+      - name: accession
+        tests: [unique, not_null]
+      - name: cik
+      - name: company
+      - name: city
+      - name: county_name
+      - name: industry
+      - name: filing_date
+      - name: amount_sold
+      - name: round_bin
+      - name: officers
+      - name: score
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 100
+      - name: lcas_24m
+      - name: software_lcas
+      - name: data_lcas
+      - name: product_lcas
+      - name: early_career_lcas
+      - name: reasons
+        description: The score explained in plain words.
+        tests: [not_null]
+      - name: sec_url

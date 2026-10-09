@@ -38,5 +38,10 @@ extend-exclude = ["web", "dbt/dbt_packages", "dbt/target"]
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
 
+[tool.ruff.lint.per-file-ignores]
+# fixtures reproduce real file layouts (SEC index lines, Form D XML) that run past 100 columns
+"tests/make_fixtures.py" = ["E501"]
+"tests/test_radar.py" = ["E501"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -22,3 +22,26 @@ sources:
     tables:
       - name: lca_all
         description: One row per LCA case, de-duplicated across the quarterly files (latest file wins).
+
+  - name: formd_recent
+    description: >
+      Form D filings of the last few weeks, read straight from SEC EDGAR by
+      `python -m fundsponsor.fetch_edgar_recent`. One flat row per filing.
+    meta:
+      external_location: "{{ env_var('FS_DATA_DIR', var('raw_dir')) }}/{name}.parquet"
+    tables:
+      - name: formd_recent
+        description: One row per recent Form D with issuer, offering and officer names.
+
+  - name: seed_cache
+    description: >
+      Small extracts of the warehouse, committed to the repository so the weekly radar can run
+      in GitHub Actions without the 1.6 GB of LCA files. Written by
+      `python -m fundsponsor.export_seed_cache`.
+    meta:
+      external_location: "{{ env_var('FS_SEED_CACHE', var('seed_cache_dir')) }}/{name}.parquet"
+    tables:
+      - name: lca_employer_history
+        description: Certified H-1B LCAs per California employer per month, with role and level counts.
+      - name: listed_ciks
+        description: CIKs that carried an SEC industry code on a Form D, i.e. listed companies.

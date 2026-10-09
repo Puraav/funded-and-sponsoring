@@ -10,6 +10,7 @@ import requests
 from . import config
 
 _last_request = 0.0
+_session = requests.Session()  # keeps the connection open between requests
 
 
 def _wait_for_slot() -> None:
@@ -44,7 +45,7 @@ def download(
     for attempt in range(1, retries + 1):
         _wait_for_slot()
         try:
-            with requests.get(url, headers=headers, stream=True, timeout=120) as response:
+            with _session.get(url, headers=headers, stream=True, timeout=120) as response:
                 if response.status_code == 404:
                     return False
                 response.raise_for_status()

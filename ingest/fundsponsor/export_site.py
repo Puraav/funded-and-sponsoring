@@ -76,7 +76,8 @@ def export(warehouse: duckdb.DuckDBPyConnection, out_dir: Path) -> None:
 
     companies = rows(
         warehouse,
-        """select company_slug as slug, company as name, city, county_name as county, industry,
+        """select company_slug as slug, cik, company as name, city, county_name as county,
+                  industry,
                   latest_raise_date as latest_raise, raise_count as raises, total_sold,
                   round_bin, prior_24m, after_12m, sponsored_before, has_full_followup,
                   lcas_total, median_wage, role_groups, has_page
@@ -130,7 +131,7 @@ def export(warehouse: duckdb.DuckDBPyConnection, out_dir: Path) -> None:
             },
         )
 
-    # the radar arrives in spec 10; until then the site gets an empty list
+    # the radar has its own exporter (export_radar); never leave the site without the file
     if not (out_dir / "radar.json").exists():
         write(out_dir / "radar.json", {"generated": None, "days": None, "rows": []})
 

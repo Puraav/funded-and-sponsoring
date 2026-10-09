@@ -18,7 +18,8 @@ RAW_DIR = (
 )
 DATA_DIR = ROOT / "data"
 CHARTS_DIR = ROOT / "charts"
-WAREHOUSE = DATA_DIR / "warehouse.duckdb"
+# FS_WAREHOUSE points at another DuckDB file (the same variable dbt/profiles.yml reads).
+WAREHOUSE = Path(os.environ.get("FS_WAREHOUSE") or DATA_DIR / "warehouse.duckdb").resolve()
 WEB_DATA_DIR = ROOT / "web" / "public" / "data"
 
 # The nine Bay Area counties, keyed by 5-digit county FIPS.
@@ -82,3 +83,14 @@ LCA_FILES = [
 ]
 LCA_DIR = RAW_DIR / "lca"
 LCA_PARQUET = LCA_DIR / "lca_all.parquet"
+
+# --- EDGAR recent Form D filings for the radar (spec 10) ---
+EDGAR_DAILY_INDEX = (
+    "https://www.sec.gov/Archives/edgar/daily-index/{year}/QTR{quarter}/form.{yyyymmdd}.idx"
+)
+EDGAR_PRIMARY_DOC = "https://www.sec.gov/Archives/edgar/data/{cik}/{accession}/primary_doc.xml"
+EDGAR_DIR = RAW_DIR / "edgar"
+FORMD_RECENT_PARQUET = RAW_DIR / "formd_recent.parquet"
+# Small extracts the weekly GitHub Action uses instead of the full LCA data.
+SEED_CACHE_DIR = Path(os.environ.get("FS_SEED_CACHE") or ROOT / "data" / "seed_cache").resolve()
+RADAR_DIR = ROOT / "radar"

@@ -24,6 +24,7 @@ jobs:
       DBT_PROFILES_DIR: .
       FS_DATA_DIR: ${{ github.workspace }}/tests/fixtures/raw
       FS_WAREHOUSE: /tmp/fixture.duckdb
+      FS_SEED_CACHE: ${{ github.workspace }}/tests/fixtures/seed_cache
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

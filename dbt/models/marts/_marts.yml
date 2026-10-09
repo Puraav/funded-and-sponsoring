@@ -434,3 +434,26 @@ models:
       - name: person_name
       - name: relationships
         description: Executive Officer, Director and/or Promoter.
+
+  - name: mart_lca_employer_history
+    description: >
+      Certified H-1B LCAs per California employer per month, with counts by role group and for
+      early-career wage levels. Exported to `data/seed_cache/lca_employer_history.parquet`.
+    columns:
+      - name: employer_name
+        tests: [not_null]
+      - name: trade_name_dba
+      - name: employer_zip5
+        tests: [not_null]
+      - name: month
+      - name: lcas
+      - name: software_lcas
+      - name: data_lcas
+      - name: product_lcas
+      - name: early_career_lcas
+
+  - name: mart_listed_ciks
+    description: CIKs that carried an SEC industry code on a Form D (listed companies). Exported to `data/seed_cache/listed_ciks.parquet`.
+    columns:
+      - name: cik
+        tests: [unique, not_null]

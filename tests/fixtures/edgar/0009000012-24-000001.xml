@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<edgarSubmission>
+    <schemaVersion>X0708</schemaVersion>
+    <submissionType>D</submissionType>
+    <testOrLive>LIVE</testOrLive>
+    <primaryIssuer>
+        <cik>0009000012</cik>
+        <entityName>Tessel Harbor Fund II, L.P.</entityName>
+        <issuerAddress>
+            <street1>200 Fixture St</street1>
+            <city>Menlo Park</city>
+            <stateOrCountry>CA</stateOrCountry>
+            <stateOrCountryDescription>CALIFORNIA</stateOrCountryDescription>
+            <zipCode>94025</zipCode>
+        </issuerAddress>
+        <issuerPhoneNumber>555-0100</issuerPhoneNumber>
+        <jurisdictionOfInc>DELAWARE</jurisdictionOfInc>
+        <entityType>Limited Partnership</entityType>
+        <yearOfInc><withinFiveYears>true</withinFiveYears><value>2022</value></yearOfInc>
+    </primaryIssuer>
+    <relatedPersonsList>
+        <relatedPersonInfo>
+            <relatedPersonName><firstName>Fixture</firstName><lastName>Founder</lastName></relatedPersonName>
+            <relatedPersonAddress><street1>1 Private Rd</street1><city>Menlo Park</city></relatedPersonAddress>
+            <relatedPersonRelationshipList>
+                <relationship>Executive Officer</relationship>
+                <relationship>Director</relationship>
+            </relatedPersonRelationshipList>
+        </relatedPersonInfo>
+        <relatedPersonInfo>
+            <relatedPersonName><firstName>Fixture</firstName><lastName>Investor</lastName></relatedPersonName>
+            <relatedPersonRelationshipList><relationship>Director</relationship></relatedPersonRelationshipList>
+        </relatedPersonInfo>
+    </relatedPersonsList>
+    <offeringData>
+        <industryGroup><industryGroupType>Pooled Investment Fund</industryGroupType></industryGroup>
+        <typeOfFiling>
+            <newOrAmendment><isAmendment>false</isAmendment></newOrAmendment>
+            <dateOfFirstSale><value>2024-06-05</value></dateOfFirstSale>
+        </typeOfFiling>
+        <businessCombinationTransaction>
+            <isBusinessCombinationTransaction>false</isBusinessCombinationTransaction>
+        </businessCombinationTransaction>
+        <offeringSalesAmounts>
+            <totalOfferingAmount>Indefinite</totalOfferingAmount>
+            <totalAmountSold>9000000</totalAmountSold>
+            <totalRemaining>0</totalRemaining>
+        </offeringSalesAmounts>
+    </offeringData>
+</edgarSubmission>

@@ -90,6 +90,7 @@ export type Metrics = {
 
 export type Company = {
   slug: string;
+  cik: string;
   name: string;
   city: string | null;
   county: string;
@@ -164,7 +165,14 @@ export type RadarRow = {
   sec_url: string;
 };
 
-export type Radar = { generated: string | null; days: number | null; rows: RadarRow[] };
+export type Radar = {
+  generated: string | null;
+  days: number | null;
+  first_filing?: string | null;
+  last_filing?: string | null;
+  startups_considered?: number;
+  rows: RadarRow[];
+};
 
 function load<T>(file: string): T {
   return JSON.parse(readFileSync(path.join(process.cwd(), "public", "data", file), "utf8")) as T;
