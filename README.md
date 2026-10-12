@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/Puraav/funded-and-sponsoring/actions/workflows/ci.yml/badge.svg)](https://github.com/Puraav/funded-and-sponsoring/actions/workflows/ci.yml)
 
-**Live site:** not deployed yet (the link goes here once it is on Vercel)
+**Live site: [funded-and-sponsoring.vercel.app](https://funded-and-sponsoring.vercel.app)**
 
 Two free public datasets, SEC Form D filings and Department of Labor LCA disclosure data, joined on company name and address. Python downloads the files, dbt on DuckDB does every transformation, and a static Next.js site shows the result.
 
