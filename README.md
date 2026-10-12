@@ -158,7 +158,7 @@ data/                 findings.json, the checked match sample, the radar's small
 
 ## Why I built this
 
-I studied computer science at the University of San Francisco, and while looking at early-stage startups I kept hitting the same question: which ones actually hire international talent after they raise money? The data to answer it is public, in SEC funding filings and Department of Labor H-1B filings, but nobody had joined the two. This project joins them, and the weekly radar is the tool I wanted for my own search.
+I studied computer science at the University of San Francisco, and while looking at early-stage startups I kept hitting the same question: which ones go on to file for H-1B workers after they raise money? Both halves of the answer are public, in SEC funding filings and Department of Labor H-1B wage filings, but nobody had joined them. This project joins them, and the weekly radar is the tool I wanted for my own search.
 
 ## License
 
